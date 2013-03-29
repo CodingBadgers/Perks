@@ -17,6 +17,7 @@
     
     <modules>
 		<module>bTransported</module>
+		<module>bKits</module>
     </modules>
     
     <repositories>
