@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.btransported.commands.tp.CommandTP;
 import uk.codingbadgers.btransported.listeners.PlayerTeleportListener;
 
 /**
@@ -38,6 +39,9 @@ public class bTransported extends Module {
 		
 		loadLanguageFile();
 		createConfigurationFiles();
+		
+		// Resiter the commands
+		registerCommand(new CommandTP(this));
 		
 		// Register the player teleport listener
 		register(new PlayerTeleportListener(this));
