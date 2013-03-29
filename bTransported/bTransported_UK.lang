@@ -1,5 +1,11 @@
-#EXAMPLE-ID
-This is an example ID
+#CANCEL-TELEPORT-NONSAFE
+You are trying to teleport to a none safe place. Teleport cancelled.
 
-#EXAMPLE-ID-2
-This is another example ID
+#CANCEL-TELEPORT-FALL-DISTANCE
+Teleporting to this location would result in fall damage. Teleport cancelled.
+
+#CANCEL-TELEPORT-DANGEROUS
+The block you are teleporting to is dangerous. Teleport cancelled.
+
+#CANCEL-TELEPORT-TYPE-BLACKLISTED
+That type of teleportation is blacklisted in this world.
