@@ -33,3 +33,40 @@ You have been teleported to %location%.
 
 #COMMAND-TP-NO-PERMISSION
 You do not have the required teleport permission (%permission%).
+
+#COMMAND-WARP-USAGE
+To use /warp please specify the warp name you wish to travel too (/warp <name>).
+
+#COMMAND-WARP-ADD-USAGE
+To create a warp use "/warp add" which will create a warp at your current location.
+
+#COMMAND-WARP-DELETE-USAGE
+To delete a warp use "/warp delete name" which will delete the warp with the given name.
+
+#COMMAND-WARP-LIST-USAGE
+To list all warps use "/warp list" which will list all known warp locations.
+
+#COMMAND-WARP-LIST
+The following warps are available to you... 
+
+#COMMAND-WARP-NOT-FOUND
+A warp with the name %warpname% could not be found.
+
+#COMMAND-WARP-COMPLETE
+You have been warped to %warpname%.
+
+#COMMAND-WARP-OTHER-PLAYER-NOT-FOUND
+Could not find a player with the name %playername%. Warp cancelled.
+
+#COMMAND-WARP-NAME-RESERVED
+The name you entered for the warp name is reserved, please use another.
+
+#COMMAND-WARP-NAME-USED
+The name you entered for the warp name is currently in use, please use another.
+
+#COMMAND-WARP-CREATED
+The warp with the name %warpname% has been created.
+
+#COMMAND-WARP-DELETED
+The warp with the name %warpname% has been deleted.
+
