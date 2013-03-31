@@ -40,6 +40,11 @@ public class CommandWarp extends ModuleCommand {
 		
 		Player player = (Player)sender;
 		
+		if (!Module.hasPermission(player, "perks.btransported.warp")) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp"));
+			return true;
+		}
+		
 		if (args.length == 0) {
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-USAGE"));
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-ADD-USAGE"));
@@ -54,6 +59,11 @@ public class CommandWarp extends ModuleCommand {
 			if (args[0].equalsIgnoreCase("list")) {
 				// Handle /warp list
 				
+				if (!Module.hasPermission(player, "perks.btransported.warp.list")) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.list"));
+					return true;
+				}
+				
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-LIST"));
 				for (Entry<String, Location> entry : m_warp.entrySet()) {
 					final String name = entry.getKey();
@@ -67,7 +77,7 @@ public class CommandWarp extends ModuleCommand {
 				
 			} else {
 				// Handle /warp <name>
-				final String warpname = args[0];
+				final String warpname = args[0];				
 				warpPlayer(player, warpname);
 				return true;
 			}
@@ -81,6 +91,11 @@ public class CommandWarp extends ModuleCommand {
 			
 			if (command.equalsIgnoreCase("add")) {
 				// Handle /warp add <name>
+				
+				if (!Module.hasPermission(player, "perks.btransported.warp.add")) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.add"));
+					return true;
+				}
 				
 				final String warpname = args[1];
 				
@@ -102,6 +117,11 @@ public class CommandWarp extends ModuleCommand {
 			} else if (command.equalsIgnoreCase("delete")) {
 				// Handle /warp delete <name>
 				
+				if (!Module.hasPermission(player, "perks.btransported.warp.delete")) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.delete"));
+					return true;
+				}
+				
 				final String warpname = args[1];
 				
 				if (m_warp.containsKey(warpname)) {
@@ -118,6 +138,11 @@ public class CommandWarp extends ModuleCommand {
 			} else if (command.equalsIgnoreCase("all")) {
 				// Handle /warp all <name>
 				
+				if (!Module.hasPermission(player, "perks.btransported.warp.all")) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.all"));
+					return true;
+				}
+				
 				final String warpname = args[1];
 					
 				for (Player warpPlayer : Bukkit.getServer().getOnlinePlayers()) {
@@ -130,6 +155,11 @@ public class CommandWarp extends ModuleCommand {
 				
 			} else {
 				// Handle /warp <playername> <name>
+				
+				if (!Module.hasPermission(player, "perks.btransported.warp.other")) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.other"));
+					return true;
+				}
 				
 				final String playerName = command;
 				final String warpname = args[1];
@@ -146,10 +176,21 @@ public class CommandWarp extends ModuleCommand {
 			
 		}
 		
+		// entered the wrong number of parameters...
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-USAGE"));
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-ADD-USAGE"));
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-DELETE-USAGE"));
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-LIST-USAGE"));
+		
 		return true;
 	}
 	
 	private boolean warpPlayer(final Player player, final String warpName) {
+		
+		if (!Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp." + warpName));
+			return true;
+		}
 		
 		if (!m_warp.containsKey(warpName)) {
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NOT-FOUND").replace("%warpname%", warpName));					
@@ -184,7 +225,7 @@ public class CommandWarp extends ModuleCommand {
 	private void deleteWarpToDatabase(final String warpName) {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
 		
-		String query = "DELETE FROM `perks_vanish` " +
+		String query = "DELETE FROM `perks_warps` " +
 				"WHERE player=" + "'" + warpName + "';";
 		
 		db.Query(query, true);
@@ -211,7 +252,7 @@ public class CommandWarp extends ModuleCommand {
 		
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
 		
-		String query = "SELECT * FROM perks_homes";
+		String query = "SELECT * FROM perks_warps";
 		ResultSet result = db.QueryResult(query);
 		
 		if (result != null) {

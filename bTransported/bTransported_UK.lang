@@ -70,3 +70,5 @@ The warp with the name %warpname% has been created.
 #COMMAND-WARP-DELETED
 The warp with the name %warpname% has been deleted.
 
+#COMMAND-WARP-NO-PERMISSION
+You do not have the required warp permission (%permission%).
