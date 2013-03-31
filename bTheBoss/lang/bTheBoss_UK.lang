@@ -1,0 +1,56 @@
+#not-player
+You can only use this command as a player
+
+#no-permisson
+You do not have permission to use this command
+
+#no-player
+The player you have specified is not online
+
+#not-number
+Your input could not be parsed as a number
+
+#vanish-vanished
+You have been vanished
+
+#vanish-shown
+You are no longer vanished
+
+#vanish-vanished-broadcast
+&e%player% has left the game
+
+#vanish-shown-broadcast
+&e%player% has joined the game
+
+#vanish-vanished-broadcast-override
+&e%player% has vanished
+
+#vanish-shown-broadcast-override
+&e%player% has shown themselves
+
+#clear-cleared-own
+You have cleared your inventory
+
+#clear-cleared-other
+You have cleared %target%'s inventory
+
+#clear-cleared-target
+%sender% has cleared your inventory
+
+#clear-collect-other
+%sender% has restored your inventory
+
+#clear-collect-own
+You have restored your inventory
+
+#clear-collect-target
+You have restored %target%'s inventory
+
+#speed-set-other
+You have set %target%'s flight speed to %speed%
+
+#speed-set-target
+%sender% has set your flight speed to %speed%
+
+#speed-set-own
+You have set your flight speed to %speed%
