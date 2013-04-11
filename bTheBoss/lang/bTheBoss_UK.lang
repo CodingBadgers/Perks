@@ -54,3 +54,15 @@ You have set %target%'s flight speed to %speed%
 
 #speed-set-own
 You have set your flight speed to %speed%
+
+#inv-give-other
+You have been given %ammount% of %item% by %sender%
+
+#inv-give-target
+You have given %target% %ammount% of %item%
+
+#inv-give-own
+You have been given %ammount% of %item%
+
+#inv-no-item
+The item you have specified does not exist

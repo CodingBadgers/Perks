@@ -1,9 +1,11 @@
 package uk.thecodingbadgers.btheboss;
 
+import java.io.IOException;
 import java.util.logging.Level;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.thecodingbadgers.btheboss.commands.*;
+import uk.thecodingbadgers.btheboss.inventory.InventoryAliases;
 
 public class bTheBoss extends Module {
 
@@ -17,12 +19,18 @@ public class bTheBoss extends Module {
 	public void onEnable() {
 		instance = this;
 		
-		loadLanguageFile();
+		try {
+			loadLanguageFile();
+			InventoryAliases.loadAliases();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		registerCommand(new CommandVanish());
 		registerCommand(new CommandClear());
 		registerCommand(new CommandCollect());
 		registerCommand(new CommandSpeed());
+		registerCommand(new CommandInventory());
 		
 		log(Level.INFO, getName() + " version " + getVersion() + " has been enabled successfully");
 	}

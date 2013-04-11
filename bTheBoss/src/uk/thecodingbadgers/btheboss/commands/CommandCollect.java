@@ -34,11 +34,6 @@ public class CommandCollect extends ModuleCommand {
 			return true;
 		}
 		
-		if (args.length < 1) {
-			outputMessage(sender, getUsage());
-			return true;
-		}
-		
 		Player target = player;
 		
 		if (args.length >= 1) {
