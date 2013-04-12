@@ -19,6 +19,8 @@
 		<module>bTransported</module>
 		<module>bKits</module>
 		<module>bTheBoss</module>
+		<!--<module>bGui</module>-->
+		<module>bInvested</module>
     </modules>
     
     <repositories>
@@ -55,7 +57,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.5-R0.1-SNAPSHOT</version>
+            <version>1.5.1-R0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
     

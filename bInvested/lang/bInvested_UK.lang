@@ -1,0 +1,38 @@
+#not-player
+You can only use this command as a player
+
+#no-permisson
+You do not have permission to use this command
+
+#no-player
+The player you have specified is not online
+
+#not-number
+Your input could not be parsed as a number
+
+#fly-flying-own
+You have been given the gift of flight
+
+#fly-land-own
+The gift of flight has been taken from you
+
+#fly-flying-other
+You have given the gift of flight to %target%
+
+#fly-land-other
+You have taken away the gift of flight from %target%
+
+#fly-flying-target
+%sender% has given you the gift of flight
+
+#fly-land-target
+%sender% has removed your gift of flight
+
+#craft-open
+You have opened your portable crafting table
+
+#ender-open-own
+You have opened your enderchest
+
+#craft-open-other
+You have opened %target%'s enderchest

@@ -58,7 +58,7 @@ public class CommandCollect extends ModuleCommand {
 		target.getInventory().setContents(contents);
 		
 		if (player != target) {
-			outputMessage(target, bTheBoss.getInstance().getLanguageValue("clear-collect-other").replace("%target%", target.getName()));
+			outputMessage(sender, bTheBoss.getInstance().getLanguageValue("clear-collect-other").replace("%target%", target.getName()));
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("clear-collect-target").replace("%sender%", player.getName()));
 		} else {
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("clear-collect-own"));

@@ -57,7 +57,7 @@ public class CommandClear extends ModuleCommand {
 		target.getInventory().clear();
 		
 		if (player != target) {
-			outputMessage(target, bTheBoss.getInstance().getLanguageValue("clear-cleared-other").replace("%target%", target.getName()));
+			outputMessage(sender, bTheBoss.getInstance().getLanguageValue("clear-cleared-other").replace("%target%", target.getName()));
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("clear-cleared-target").replace("%sender%", player.getName()));
 		} else {
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("clear-cleared-own"));

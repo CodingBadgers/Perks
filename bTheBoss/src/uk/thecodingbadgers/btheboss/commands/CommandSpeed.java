@@ -73,7 +73,7 @@ public class CommandSpeed extends ModuleCommand {
 		}
 		
 		if (player != target) {
-			outputMessage(target, bTheBoss.getInstance().getLanguageValue("speed-set-other").replace("%target%", target.getName()).replace("%speed%", speed));
+			outputMessage(sender, bTheBoss.getInstance().getLanguageValue("speed-set-other").replace("%target%", target.getName()).replace("%speed%", speed));
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("speed-set-target").replace("%sender%", player.getName()).replace("%speed%", speed));
 		} else {
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("speed-set-own").replace("%speed%", speed));

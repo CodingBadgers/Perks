@@ -104,7 +104,7 @@ public class CommandInventory extends ModuleCommand {
 		target.getInventory().addItem(stack);
 		
 		if (player != target) {
-			outputMessage(target, bTheBoss.getInstance().getLanguageValue("inv-give-other").replace("%target%", target.getName()).replace("%item%", material.name().toLowerCase()).replace("%ammount%", "" + ammount));
+			outputMessage(sender, bTheBoss.getInstance().getLanguageValue("inv-give-other").replace("%target%", target.getName()).replace("%item%", material.name().toLowerCase()).replace("%ammount%", "" + ammount));
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("inv-give-target").replace("%sender%", player.getName()).replace("%item%", material.name().toLowerCase()).replace("%ammount%", "" + ammount));
 		} else {
 			outputMessage(target, bTheBoss.getInstance().getLanguageValue("inv-give-own").replace("%item%", material.name().toLowerCase()).replace("%ammount%", "" + ammount));
