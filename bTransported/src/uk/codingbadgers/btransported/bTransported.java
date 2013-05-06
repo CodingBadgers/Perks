@@ -1,14 +1,27 @@
 package uk.codingbadgers.btransported;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jnbt.CompoundTag;
+import org.jnbt.DoubleTag;
+import org.jnbt.ListTag;
+import org.jnbt.LongTag;
+import org.jnbt.NBTInputStream;
+import org.jnbt.Tag;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.commands.tp.CommandTP;
@@ -152,5 +165,92 @@ public class bTransported extends Module {
 	 */
 	public FileConfiguration getTeleportationConfig() {
 		return m_teleportationConfiguration;
+	}
+	
+	/**
+	 * Teleport an offline player to a given location
+	 * @return True on success false otherwise
+	 */	
+	public boolean teleportOfflinePlayer(OfflinePlayer player, Location location) {
+	
+		// Get the player dat of the player we want to modify
+		final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".dat";
+		File tpPlayerDat = new File(tpPlayerDatPath);
+		if (!tpPlayerDat.exists()) {
+			// could not find offline player dat
+			this.log(Level.INFO, "Could not find offline player.dat at " + tpPlayerDatPath);
+			return false;
+		}
+		
+		InputStream inputStream = null;
+		NBTInputStream nbtInputStream = null;
+		
+		try {
+			inputStream = new FileInputStream(tpPlayerDat);
+			nbtInputStream = new NBTInputStream(inputStream);
+			
+			Tag nbtTag = nbtInputStream.readTag();
+			if (!(nbtTag instanceof CompoundTag)) {
+				// not a compound tag, this is wrong
+				this.log(Level.INFO, "Root NBT tag was not a compond tag for player '" + tpPlayerDatPath + "'.");
+				return false;
+			}
+			
+			CompoundTag rootTag = (CompoundTag)nbtTag;
+			List<Tag> position = ((ListTag)rootTag.getValue().get("Pos")).getValue();
+			if (position.size() != 3) {
+				// there should be 3 elements in the Pos tag
+				this.log(Level.INFO, "The Pos tag of the player '" + tpPlayerDatPath + "' does not have 3 coordinates.");
+				return false;
+			}
+
+			Long worldLeast = ((LongTag)rootTag.getValue().get("WorldUUIDLeast")).getValue();
+			Long worldMost = ((LongTag)rootTag.getValue().get("WorldUUIDMost")).getValue();
+			World currentworld = Bukkit.getWorld(new UUID(worldMost, worldLeast));
+			
+			Tag newX = new DoubleTag(position.get(0).getName(), location.getX());
+			Tag newY = new DoubleTag(position.get(1).getName(), location.getY());
+			Tag newZ = new DoubleTag(position.get(2).getName(), location.getZ());
+			
+			position.set(0, newX);
+			position.set(1, newY);
+			position.set(2, newZ);
+			
+			// if the offline player is currently in the wrong world, switch the world aswell
+			if (!currentworld.getName().equalsIgnoreCase(location.getWorld().getName())) {
+				
+				// Get the world UID information
+				World world = location.getWorld();
+				Long leastValue = world.getUID().getLeastSignificantBits();
+				Long mostValue = world.getUID().getMostSignificantBits();
+				
+				// create new tags
+				Tag newWorldLeast = new LongTag(((LongTag)rootTag.getValue().get("WorldUUIDLeast")).getName(), leastValue);
+				Tag newWorldMost = new LongTag(((LongTag)rootTag.getValue().get("WorldUUIDMost")).getName(), mostValue);
+			
+				// remove old tags
+				rootTag.getValue().remove("WorldUUIDLeast");
+				rootTag.getValue().remove("WorldUUIDMost");
+				
+				// add new tags
+				rootTag.getValue().put("WorldUUIDLeast", newWorldLeast);
+				rootTag.getValue().put("WorldUUIDMost", newWorldMost);
+				
+			}
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {	
+			try {
+				nbtInputStream.close();
+				inputStream.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }

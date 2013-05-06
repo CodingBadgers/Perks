@@ -135,6 +135,8 @@ public class CommandTP extends ModuleCommand {
 					return true;
 				}
 				
+				// teleport to the locaiton of an offline player
+				
 				final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + tpPlayer.getName() + ".dat";
 				File tpPlayerDat = new File(tpPlayerDatPath);
 				if (!tpPlayerDat.exists()) {
