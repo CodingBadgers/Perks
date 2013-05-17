@@ -97,3 +97,10 @@ A world or player with the name %name% could not be found.
 #COMMAND-SPAWN-COMPLETE
 %playername% has been teleported to the spawn of %worldname%.
 
+#COMMAND-SPAWN-WORLD-ALREADY-EXISTS
+A world spawn for world %worldname% already exists, please delete the old opne before setting a new one.
+
+#COMMAND-SPAWN-WORLD-DOESNT-EXIST
+A world spawn for the world %worldname% does not exists.
+
+

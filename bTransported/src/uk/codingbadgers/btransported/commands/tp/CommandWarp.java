@@ -130,7 +130,7 @@ public class CommandWarp extends ModuleCommand {
 				}				
 				
 				m_warp.remove(warpname);
-				deleteWarpToDatabase(warpname);
+				deleteWarpFromDatabase(warpname);
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-DELETED").replace("%warpname%", warpname));
 				
 				return true;
@@ -222,11 +222,11 @@ public class CommandWarp extends ModuleCommand {
 		db.Query(query);
 	}
 	
-	private void deleteWarpToDatabase(final String warpName) {
+	private void deleteWarpFromDatabase(final String warpName) {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
 		
 		String query = "DELETE FROM `perks_warps` " +
-				"WHERE player=" + "'" + warpName + "';";
+				"WHERE name=" + "'" + warpName + "';";
 		
 		db.Query(query, true);
 	}
