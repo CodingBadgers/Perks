@@ -24,7 +24,7 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
  * They can teleport themselves to any world or their current world spawn
  * They can teleport other players to their current world or any other world spawn
  * All based around permissions.
- * There is also the abillity to teleport offline players to a world spawn
+ * There is also the ability to teleport offline players to a world spawn
  */
 public class CommandSpawn extends ModuleCommand {
 	

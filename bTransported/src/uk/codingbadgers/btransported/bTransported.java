@@ -168,6 +168,67 @@ public class bTransported extends Module {
 	}
 	
 	/**
+	 * Gets the location of a given offline player
+	 * @param player	The player of who's location we want
+	 * @return	The location if found, null if an error occurred.
+	 */
+	public Location getLocationOfOfflinePlayer(OfflinePlayer player) {
+
+		final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".dat";
+		File tpPlayerDat = new File(tpPlayerDatPath);
+		if (!tpPlayerDat.exists()) {
+			// could not find offline player dat
+			log(Level.INFO, "Could not find offline player.dat at " + tpPlayerDatPath);
+			return null;
+		}
+		
+		InputStream inputStream = null;
+		NBTInputStream nbtInputStream = null;
+		
+		try {
+			inputStream = new FileInputStream(tpPlayerDat);
+			nbtInputStream = new NBTInputStream(inputStream);
+			
+			Tag nbtTag = nbtInputStream.readTag();
+			if (!(nbtTag instanceof CompoundTag)) {
+				// not a compound tag, this is wrong
+				log(Level.INFO, "Root NBT tag was not a compond tag for player '" + tpPlayerDatPath + "'.");
+				return null;
+			}
+			
+			CompoundTag rootTag = (CompoundTag)nbtTag;
+			List<Tag> position = ((ListTag)rootTag.getValue().get("Pos")).getValue();
+			if (position.size() != 3) {
+				// there should be 3 elements in the Pos tag
+				log(Level.INFO, "The Pos tag of the player '" + tpPlayerDatPath + "' does not have 3 coordinates.");
+				return null;
+			}
+			
+			Double x = (Double)position.get(0).getValue();
+			Double y = (Double)position.get(1).getValue();
+			Double z = (Double)position.get(2).getValue();
+			
+			Long worldLeast = ((LongTag)rootTag.getValue().get("WorldUUIDLeast")).getValue();
+			Long worldMost = ((LongTag)rootTag.getValue().get("WorldUUIDMost")).getValue();
+			World world = Bukkit.getWorld(new UUID(worldMost, worldLeast));
+			
+			return new Location(world, x, y, z);					
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		} finally {	
+			try {
+				nbtInputStream.close();
+				inputStream.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				return null;
+			}
+		}
+	}
+	
+	/**
 	 * Teleport an offline player to a given location
 	 * @return True on success false otherwise
 	 */	

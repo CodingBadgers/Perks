@@ -1,12 +1,5 @@
 package uk.codingbadgers.btransported.commands.tp;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,8 +11,6 @@ import org.bukkit.entity.Player;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
-
-import org.jnbt.*;
 
 public class CommandTP extends ModuleCommand {
 	
@@ -136,64 +127,7 @@ public class CommandTP extends ModuleCommand {
 				}
 				
 				// teleport to the locaiton of an offline player
-				
-				final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + tpPlayer.getName() + ".dat";
-				File tpPlayerDat = new File(tpPlayerDatPath);
-				if (!tpPlayerDat.exists()) {
-					// could not find offline player dat
-					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-PLAYER-NOT-FOUND"));
-					m_module.log(Level.INFO, "Could not find offline player.dat at " + tpPlayerDatPath);
-					return true;
-				}
-				
-				InputStream inputStream = null;
-				NBTInputStream nbtInputStream = null;
-				
-				try {
-					inputStream = new FileInputStream(tpPlayerDat);
-					nbtInputStream = new NBTInputStream(inputStream);
-					
-					Tag nbtTag = nbtInputStream.readTag();
-					if (!(nbtTag instanceof CompoundTag)) {
-						// not a compound tag, this is wrong
-						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-ERROR-UNKOWN"));
-						m_module.log(Level.INFO, "Root NBT tag was not a compond tag for player '" + tpPlayerDatPath + "'.");
-						return true;
-					}
-					
-					CompoundTag rootTag = (CompoundTag)nbtTag;
-					List<Tag> position = ((ListTag)rootTag.getValue().get("Pos")).getValue();
-					if (position.size() != 3) {
-						// there should be 3 elements in the Pos tag
-						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-ERROR-UNKOWN"));
-						m_module.log(Level.INFO, "The Pos tag of the player '" + tpPlayerDatPath + "' does not have 3 coordinates.");
-						return true;
-					}
-					
-					Double x = (Double)position.get(0).getValue();
-					Double y = (Double)position.get(1).getValue();
-					Double z = (Double)position.get(2).getValue();
-					
-					Long worldLeast = ((LongTag)rootTag.getValue().get("WorldUUIDLeast")).getValue();
-					Long worldMost = ((LongTag)rootTag.getValue().get("WorldUUIDMost")).getValue();
-					World world = Bukkit.getWorld(new UUID(worldMost, worldLeast));
-					
-					tpLocation = new Location(world, x, y, z);					
-					
-				} catch (Exception ex) {
-					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-ERROR-UNKOWN"));
-					ex.printStackTrace();
-					return true;
-				} finally {	
-					try {
-						nbtInputStream.close();
-						inputStream.close();
-					} catch (Exception ex) {
-						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-ERROR-UNKOWN"));
-						ex.printStackTrace();
-						return true;
-					}
-				}
+				tpLocation = m_module.getLocationOfOfflinePlayer(tpPlayer);			
 			}
 			
 			if (tpLocation != null) {
