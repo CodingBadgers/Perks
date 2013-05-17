@@ -55,7 +55,7 @@ public class CommandEnder extends ModuleCommand {
 		return true;
 	}
 	
-	public void outputMessage(CommandSender sender, String message) {	
+	private void outputMessage(CommandSender sender, String message) {	
 		message = ChatColor.translateAlternateColorCodes('&', message);
 		sender.sendMessage(ChatColor.DARK_PURPLE + "[" + bInvested.getInstance().getName() + "] " + ChatColor.RESET + message);
 	}

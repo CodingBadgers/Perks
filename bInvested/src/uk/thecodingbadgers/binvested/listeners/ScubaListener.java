@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import uk.thecodingbadgers.binvested.bInvested;
 
-public class SubaListener implements Listener {
+public class ScubaListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDamage(EntityDamageEvent event) {
@@ -21,12 +21,12 @@ public class SubaListener implements Listener {
 		
 		Player player = (Player) event.getEntity();
 		
-		if (!bInvested.hasPermission(player, "perks.binvested.suba")) {
+		if (!bInvested.hasPermission(player, "perks.binvested.scuba")) {
 			return;
 		}
 		
 		if (!(player.getEquipment().getHelmet().getType() == Material.GOLD_HELMET 
-				|| bInvested.hasPermission(player, "perks.binvested.suba.plus")))  {
+				|| bInvested.hasPermission(player, "perks.binvested.scuba.plus")))  {
 			return;
 		}
 		

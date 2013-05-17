@@ -28,6 +28,9 @@ You have taken away the gift of flight from %target%
 #fly-land-target
 %sender% has removed your gift of flight
 
+#fly-no-damage
+You cannot cause damage whilst you are flying
+
 #craft-open
 You have opened your portable crafting table
 
