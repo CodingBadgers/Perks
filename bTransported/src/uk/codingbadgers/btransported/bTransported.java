@@ -24,8 +24,11 @@ import org.jnbt.NBTInputStream;
 import org.jnbt.Tag;
 
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.btransported.commands.CommandSpawn;
 import uk.codingbadgers.btransported.commands.CommandWarp;
 import uk.codingbadgers.btransported.commands.tp.CommandTP;
+import uk.codingbadgers.btransported.commands.tp.CommandTPA;
+import uk.codingbadgers.btransported.commands.tp.CommandTPR;
 import uk.codingbadgers.btransported.listeners.PlayerTeleportListener;
 
 /**
@@ -56,7 +59,10 @@ public class bTransported extends Module {
 		
 		// Resiter the commands
 		registerCommand(new CommandTP(this));
+		registerCommand(new CommandTPR(this));
+		registerCommand(new CommandTPA(this));
 		registerCommand(new CommandWarp(this));
+		registerCommand(new CommandSpawn(this));
 		
 		// Register the player teleport listener
 		register(new PlayerTeleportListener(this));

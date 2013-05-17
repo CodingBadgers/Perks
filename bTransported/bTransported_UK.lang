@@ -103,4 +103,9 @@ A world spawn for world %worldname% already exists, please delete the old opne b
 #COMMAND-SPAWN-WORLD-DOESNT-EXIST
 A world spawn for the world %worldname% does not exists.
 
+#COMMAND-SPAWN-ADDED
+A spawn for the world %worldname% has been added.
+
+#COMMAND-SPAWN-DELETED
+The spawn for the world %worldname% has been delete.
 

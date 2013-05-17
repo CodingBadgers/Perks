@@ -79,6 +79,8 @@ public class CommandSpawn extends ModuleCommand {
 			
 			teleportPlayer(player, player.getWorld().getName());
 			
+			return true;
+			
 		// Handle /spawn <world name> and /spawn <player name>
 		} else if (args.length == 1) {
 			
@@ -95,6 +97,8 @@ public class CommandSpawn extends ModuleCommand {
 				m_spawn.put(worldName, location);
 				addSpawnToDatabase(location);
 				
+				Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-ADDED").replace("%worldname%", worldName));
+				
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("delete")) {
@@ -109,6 +113,8 @@ public class CommandSpawn extends ModuleCommand {
 				
 				m_spawn.remove(worldName);
 				deleteSpawnFromDatabase(worldName);
+				
+				Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-DELETED").replace("%worldname%", worldName));
 				
 				return true;
 				

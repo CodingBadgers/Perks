@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -69,7 +70,7 @@ public class CommandWarp extends ModuleCommand {
 					final String name = entry.getKey();
 					final Location location = entry.getValue();				
 					if (Module.hasPermission(player, "perks.btransported.warp." + name)) {
-						Module.sendMessage("bTransported", player, " - " + name + " at " + (int)location.getX() + ", " + (int)location.getY() + ", " + (int)location.getZ() + " in " + location.getWorld().getName());
+						Module.sendMessage("bTransported", player, " - " + ChatColor.GOLD + name + ChatColor.WHITE + " at " + (int)location.getX() + ", " + (int)location.getY() + ", " + (int)location.getZ() + " in " + location.getWorld().getName());
 					}
 				}
 				
@@ -97,7 +98,7 @@ public class CommandWarp extends ModuleCommand {
 					return true;
 				}
 				
-				final String warpname = args[1];
+				final String warpname = args[1].toLowerCase();
 				
 				if (warpname.equalsIgnoreCase("add") || warpname.equalsIgnoreCase("delete") || warpname.equalsIgnoreCase("all") || warpname.equalsIgnoreCase("list")) {
 					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NAME-RESERVED"));
@@ -185,7 +186,9 @@ public class CommandWarp extends ModuleCommand {
 		return true;
 	}
 	
-	private boolean warpPlayer(final Player player, final String warpName) {
+	private boolean warpPlayer(final Player player, String warpName) {
+		
+		warpName = warpName.toLowerCase();
 		
 		if (!Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp." + warpName));
