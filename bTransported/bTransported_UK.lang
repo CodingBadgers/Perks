@@ -72,3 +72,28 @@ The warp with the name %warpname% has been deleted.
 
 #COMMAND-WARP-NO-PERMISSION
 You do not have the required warp permission (%permission%).
+
+#COMMAND-SPAWN-NO-PERMISSION
+You do not have the required spawn permission (%permission%).
+
+#COMMAND-SPAWN-USAGE
+The /spawn command can take no parameters which will teleport you to your current worlds spawn.
+
+#COMMAND-SPAWN-ONE-PARAM-USAGE
+Using /spawn <world_name> will teleport you to the given worlds name spawn, /spawn <player_name> teleports the given player to your current world spawn.
+
+#COMMAND-SPAWN-TWO-PARAM-USAGE
+Using /spawn <player_name> <world_name> will teleport the given player to the given world spawn.
+
+#COMMAND-SPAWN-PLAYER-NOT-FOUND
+A player with the name %playername% could not be found.
+
+#COMMAND-SPAWN-WORLD-NOT-FOUND
+A world with the name %worldname% could not be found.
+
+#COMMAND-SPAWN-PLAYER-WORLD-NOT-FOUND
+A world or player with the name %name% could not be found.
+
+#COMMAND-SPAWN-COMPLETE
+%playername% has been teleported to the spawn of %worldname%.
+

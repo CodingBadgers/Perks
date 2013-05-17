@@ -36,12 +36,7 @@ public class CommandSpawn extends ModuleCommand {
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn"));
 			return true;
 		}
-		
-		if (args.length == 0) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-USAGE"));
-			return true;
-		}
-		
+				
 		// Handle /spawn
 		if (args.length == 0) {
 		
@@ -55,7 +50,9 @@ public class CommandSpawn extends ModuleCommand {
 		// Handle /spawn <world name> and /spawn <player name>
 		} else if (args.length == 1) {
 			
-			World world = Bukkit.getWorld(args[0]);
+			final String name = args[0];
+			
+			World world = Bukkit.getWorld(name);
 			if (world != null) {
 				// teleport the player who said the command to the spawn of the given world		
 				
@@ -64,10 +61,12 @@ public class CommandSpawn extends ModuleCommand {
 					return true;
 				}
 				
+				teleportPlayer(player, world.getName());
+				
 				return true;
 			}
 			
-			OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(args[0]);
+			OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(name);
 			if (tpPlayer != null) {
 				// teleport the given player to the spawn of the command players world
 				
@@ -79,8 +78,18 @@ public class CommandSpawn extends ModuleCommand {
 				final String worldName = player.getWorld().getName();
 				teleportPlayer(tpPlayer, worldName);
 				
+				if (!tpPlayer.isOnline()) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldName).replace("%playername%", name));				
+				}
+				
 				return true;
 			}
+			
+			// not a world or player
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-PLAYER-WORLD-NOT-FOUND").replace("%name%", name));
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-USAGE"));
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-ONE-PARAM-USAGE"));
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-TWO-PARAM-USAGE"));
 			
 			return true;
 			
@@ -92,9 +101,9 @@ public class CommandSpawn extends ModuleCommand {
 				return true;
 			}
 			
-			final String worldName = args[0];
-			final String playerName = args[1];
-			
+			final String playerName = args[0];
+			final String worldName = args[1];
+						
 			OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(playerName);
 			if (tpPlayer == null) {
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-PLAYER-NOT-FOUND").replace("%playername%", playerName));
@@ -102,6 +111,10 @@ public class CommandSpawn extends ModuleCommand {
 			}
 			
 			teleportPlayer(tpPlayer, worldName);
+			
+			if (!tpPlayer.isOnline()) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldName).replace("%playername%", playerName));				
+			}
 			
 			return true;
 		}
@@ -118,7 +131,7 @@ public class CommandSpawn extends ModuleCommand {
 			World world = Bukkit.getWorld(worldname);
 			if (world == null) {
 				if (player.isOnline()) {
-					Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-NOT-FOUND").replace("%worldname%", worldname));					
+					Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-WORLD-NOT-FOUND").replace("%worldname%", worldname));					
 				}
 				return false;
 			}
@@ -136,7 +149,7 @@ public class CommandSpawn extends ModuleCommand {
 		
 		if (player.isOnline()) {
 			player.getPlayer().teleport(location);				
-			Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldname));
+			Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldname).replace("%playername%", player.getName()));
 			return true;
 		}
 		
