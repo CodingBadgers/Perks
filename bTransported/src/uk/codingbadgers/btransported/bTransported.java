@@ -2,8 +2,10 @@ package uk.codingbadgers.btransported;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +23,7 @@ import org.jnbt.DoubleTag;
 import org.jnbt.ListTag;
 import org.jnbt.LongTag;
 import org.jnbt.NBTInputStream;
+import org.jnbt.NBTOutputStream;
 import org.jnbt.Tag;
 
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -249,12 +252,24 @@ public class bTransported extends Module {
 			return false;
 		}
 		
+		File tpPlayerBak = new File(Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".bak");
+		if (tpPlayerBak.exists()) {
+			tpPlayerBak.delete();
+		}
+		
+		tpPlayerDat.renameTo(tpPlayerBak);
+		
 		InputStream inputStream = null;
+		OutputStream outputStream = null;
 		NBTInputStream nbtInputStream = null;
+		NBTOutputStream nbtOutputStream = null;
 		
 		try {
-			inputStream = new FileInputStream(tpPlayerDat);
+			inputStream = new FileInputStream(tpPlayerBak);
 			nbtInputStream = new NBTInputStream(inputStream);
+			
+			outputStream = new FileOutputStream(tpPlayerDat);
+			nbtOutputStream = new NBTOutputStream(outputStream);
 			
 			Tag nbtTag = nbtInputStream.readTag();
 			if (!(nbtTag instanceof CompoundTag)) {
@@ -305,6 +320,8 @@ public class bTransported extends Module {
 				
 			}
 			
+			nbtOutputStream.writeTag(nbtTag);
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
@@ -312,8 +329,15 @@ public class bTransported extends Module {
 			try {
 				nbtInputStream.close();
 				inputStream.close();
+				nbtOutputStream.close();
+				outputStream.flush();
+				outputStream.close();
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				
+				tpPlayerDat.delete();
+				tpPlayerBak.renameTo(tpPlayerDat);
+								
 				return false;
 			}
 		}

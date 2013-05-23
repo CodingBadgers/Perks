@@ -95,6 +95,9 @@ A world with the name %worldname% could not be found.
 A world or player with the name %name% could not be found.
 
 #COMMAND-SPAWN-COMPLETE
+You have been teleported to the spawn of %worldname%.
+
+#COMMAND-SPAWN-COMPLETE-OTHER
 %playername% has been teleported to the spawn of %worldname%.
 
 #COMMAND-SPAWN-WORLD-ALREADY-EXISTS
@@ -108,4 +111,8 @@ A spawn for the world %worldname% has been added.
 
 #COMMAND-SPAWN-DELETED
 The spawn for the world %worldname% has been delete.
+
+#COMMAND-SPAWN-FAILED
+The spawn command failed to teleport the player to spawn.
+
 
