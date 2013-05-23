@@ -132,7 +132,7 @@ public class CommandSpawn extends ModuleCommand {
 				
 				OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(name);
 				// teleport the given player to the spawn of the command players world
-				if (tpPlayer.getFirstPlayed() != 0) {
+				if (tpPlayer.hasPlayedBefore()) {
 					if (!Module.hasPermission(player, "perks.btransported.spawn.other")) {
 						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.other"));
 						return true;
@@ -186,7 +186,7 @@ public class CommandSpawn extends ModuleCommand {
 			final String worldname = args[1];
 						
 			OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(playername);
-			if (tpPlayer.getFirstPlayed() == 0) {
+			if (!tpPlayer.hasPlayedBefore()) {
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-PLAYER-NOT-FOUND").replace("%playername%", playername));
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-TWO-PARAM-USAGE"));
 				return true;
