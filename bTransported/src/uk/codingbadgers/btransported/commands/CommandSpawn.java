@@ -39,7 +39,7 @@ public class CommandSpawn extends ModuleCommand {
 	 * @param module	The bFundamentals module
 	 */
 	public CommandSpawn(bTransported module) {
-		super("spawn", "spawn | spawn <world name> | spawn <player_name> | spawn <world_name> <player_name> | spawn add | spawn delete");
+		super("spawn", "spawn | spawn <world name> | spawn <player_name> | spawn <world_name> <player_name> | spawn add | spawn set | spawn delete");
 		m_module = module;
 		
 		createDatabase();
@@ -84,7 +84,7 @@ public class CommandSpawn extends ModuleCommand {
 		// Handle /spawn <world name> and /spawn <player name>
 		} else if (args.length == 1) {
 			
-			if (args[0].equalsIgnoreCase("add")) {
+			if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("set")) {
 				
 				final Location location = player.getLocation();
 				final String worldName = location.getWorld().getName();
@@ -137,7 +137,7 @@ public class CommandSpawn extends ModuleCommand {
 				}
 				
 				OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(name);
-				if (tpPlayer != null) {
+				if (tpPlayer.getFirstPlayed() != 0) {
 					// teleport the given player to the spawn of the command players world
 					
 					if (!Module.hasPermission(player, "perks.btransported.spawn.other")) {
@@ -176,7 +176,7 @@ public class CommandSpawn extends ModuleCommand {
 			final String worldName = args[1];
 						
 			OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(playerName);
-			if (tpPlayer == null) {
+			if (tpPlayer.getFirstPlayed() == 0) {
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-PLAYER-NOT-FOUND").replace("%playername%", playerName));
 				return true;
 			}
