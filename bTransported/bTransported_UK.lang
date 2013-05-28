@@ -115,4 +115,24 @@ The spawn for the world %worldname% has been delete.
 #COMMAND-SPAWN-FAILED
 The spawn command failed to teleport the player to spawn.
 
+#COMMAND-TPR-REQUEST-SENT
+A teleport request has been sent to %playername%.
+
+#COMMAND-TPR-RECEIVED-REQUEST
+You have received a teleport request from %playername%.
+
+#COMMAND-TPR-USAGE
+To send a teleport request to a player, simply use the command /tpr <player name>
+
+#COMMAND-TPR-PLAYER-NOT-FOUND
+A teleport request could not be sent to the player %playername%, is the player online?
+
+#COMMAND-TPA-ACCEPTED-REQUEST
+You have accepted a teleport request from %playername%.
+
+#COMMAND-TPA-REQUEST-ACCEPTED
+Your teleport request to %playername% has been accepted.
+
+#COMMAND-TPA-USAGE
+To accept a teleport request use the command /tpa [playername]. Not specifying a name will accept the latest received request.
 
