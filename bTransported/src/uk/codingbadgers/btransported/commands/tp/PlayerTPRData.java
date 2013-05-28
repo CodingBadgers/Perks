@@ -19,10 +19,10 @@ public class PlayerTPRData implements PlayerData {
 	
 	private ArrayList<TPRequest> m_requests = new ArrayList<TPRequest>();
 
-	public void addTPRequest(Player from, Player to) {
+	public boolean addTPRequest(Player from, Player to) {
 	
 		if (requestExists(from, to)) {
-			return;			
+			return false;			
 		}
 		
 		TPRequest newRequest = new TPRequest();
@@ -32,6 +32,7 @@ public class PlayerTPRData implements PlayerData {
 		
 		m_requests.add(newRequest);
 		
+		return true;
 	}
 	
 	public boolean requestExists(Player from, Player to) {

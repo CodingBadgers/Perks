@@ -121,8 +121,11 @@ A teleport request has been sent to %playername%.
 #COMMAND-TPR-RECEIVED-REQUEST
 You have received a teleport request from %playername%.
 
+#COMMAND-TPR-REQUEST-EXISTS
+A teleport request already exists from you for the player %playername%.
+
 #COMMAND-TPR-USAGE
-To send a teleport request to a player, simply use the command /tpr <player name>
+To send a teleport request to a player, simply use the command /tpr <player name>.
 
 #COMMAND-TPR-PLAYER-NOT-FOUND
 A teleport request could not be sent to the player %playername%, is the player online?

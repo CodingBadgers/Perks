@@ -49,7 +49,11 @@ public class CommandTPR extends ModuleCommand {
 				TPRData = new PlayerTPRData();
 			}
 			
-			TPRData.addTPRequest(player, requestPlayer.getPlayer());
+			if (!TPRData.addTPRequest(player, requestPlayer.getPlayer())) {
+				// Tell sender the request was sent
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPR-REQUEST-EXISTS").replace("%playername%", requestPlayer.getPlayer().getName()));
+				return true;
+			}
 	
 			requestPlayer.addPlayerData(TPRData);
 			
