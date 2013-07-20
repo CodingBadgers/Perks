@@ -139,3 +139,6 @@ Your teleport request to %playername% has been accepted.
 #COMMAND-TPA-USAGE
 To accept a teleport request use the command /tpa [playername]. Not specifying a name will accept the latest received request.
 
+#COMMAND-TPA-NO-REQUESTS
+You have no teleport requests to accept.
+

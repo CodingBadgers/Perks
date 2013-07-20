@@ -18,6 +18,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.jnbt.CompoundTag;
 import org.jnbt.DoubleTag;
 import org.jnbt.ListTag;
@@ -182,6 +183,10 @@ public class bTransported extends Module {
 	 * @return	The location if found, null if an error occurred.
 	 */
 	public Location getLocationOfOfflinePlayer(OfflinePlayer player) {
+		
+		if (player.isOnline()) {
+			return ((Player)player).getLocation();
+		}
 
 		final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".dat";
 		File tpPlayerDat = new File(tpPlayerDatPath);

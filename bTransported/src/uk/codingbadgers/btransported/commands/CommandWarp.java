@@ -25,7 +25,7 @@ public class CommandWarp extends ModuleCommand {
 	private HashMap<String, Location> m_warp = new HashMap<String, Location>();
 	
 	public CommandWarp(bTransported module) {
-		super("warp", "warp <name> | warp <playername> <name> | warp all <name> | warp list | warp add <name> | warp delete <name>");
+		super("warp", "warp <name> | warp <playername> <name> | warp all <name> | warp list | warp add <name> | warp delete <name> | warp set");
 		m_module = module;
 		
 		createDatabase();
@@ -76,6 +76,27 @@ public class CommandWarp extends ModuleCommand {
 				
 				return true;
 				
+			} else if (args[0].equalsIgnoreCase("set")) {
+				// Handle /warp set
+				
+				if (!Module.hasPermission(player, "perks.btransported.warp.set")) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.set"));
+					return true;
+				}
+				
+				final String warpname = player.getName();
+				
+				if (m_warp.containsKey(warpname)) {
+					// remove existing warp
+					m_warp.remove(warpname);
+					deleteWarpFromDatabase(warpname);
+				}
+				
+				Location location = player.getLocation();
+				m_warp.put(warpname, location);
+				addWarpToDatabase(warpname, location);
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-CREATED").replace("%warpname%", warpname));
+				
 			} else {
 				// Handle /warp <name>
 				final String warpname = args[0];				
@@ -100,7 +121,7 @@ public class CommandWarp extends ModuleCommand {
 				
 				final String warpname = args[1].toLowerCase();
 				
-				if (warpname.equalsIgnoreCase("add") || warpname.equalsIgnoreCase("delete") || warpname.equalsIgnoreCase("all") || warpname.equalsIgnoreCase("list")) {
+				if (warpname.equalsIgnoreCase("add") || warpname.equalsIgnoreCase("delete") || warpname.equalsIgnoreCase("all") || warpname.equalsIgnoreCase("list") || warpname.equalsIgnoreCase("set")) {
 					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NAME-RESERVED"));
 					return true;
 				}
@@ -191,8 +212,10 @@ public class CommandWarp extends ModuleCommand {
 		warpName = warpName.toLowerCase();
 		
 		if (!Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp." + warpName));
-			return true;
+			if (!warpName.equalsIgnoreCase(player.getName())) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp." + warpName));
+				return true;
+			}
 		}
 		
 		if (!m_warp.containsKey(warpName)) {
