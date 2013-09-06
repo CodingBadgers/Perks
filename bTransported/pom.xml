@@ -11,4 +11,13 @@
 
     <artifactId>bTransported</artifactId>
     
+	<dependencies>
+		<dependency>
+			<groupId>org.jnbt</groupId>
+			<artifactId>jNBT</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+    
 </project>
