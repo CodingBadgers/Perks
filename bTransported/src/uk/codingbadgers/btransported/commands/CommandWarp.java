@@ -245,7 +245,7 @@ public class CommandWarp extends ModuleCommand {
 				"'" + location.getPitch() + 
 				"');";
 		
-		db.Query(query);
+		db.query(query);
 	}
 	
 	private void deleteWarpFromDatabase(final String warpName) {
@@ -254,12 +254,12 @@ public class CommandWarp extends ModuleCommand {
 		String query = "DELETE FROM `perks_warps` " +
 				"WHERE name=" + "'" + warpName + "';";
 		
-		db.Query(query, true);
+		db.query(query, true);
 	}
 	
 	private void createDatabase() {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
-		if (!db.TableExists("perks_warps")) {			
+		if (!db.tableExists("perks_warps")) {			
 			String query = "CREATE TABLE perks_warps (" +
 					"name VARCHAR(64)," +
 					"world VARCHAR(128)," +
@@ -270,7 +270,7 @@ public class CommandWarp extends ModuleCommand {
 					"pitch INT" +
 					");";
 			
-			db.Query(query, true);
+			db.query(query, true);
 		}
 	}
 	
@@ -279,7 +279,7 @@ public class CommandWarp extends ModuleCommand {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
 		
 		String query = "SELECT * FROM perks_warps";
-		ResultSet result = db.QueryResult(query);
+		ResultSet result = db.queryResult(query);
 		
 		if (result != null) {
 			try {
@@ -304,7 +304,7 @@ public class CommandWarp extends ModuleCommand {
 				return;
 			}
 			
-			db.FreeResult(result);
+			db.freeResult(result);
 		}
 	}
 }

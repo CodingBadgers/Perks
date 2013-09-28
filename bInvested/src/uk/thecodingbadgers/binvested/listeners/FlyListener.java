@@ -27,10 +27,10 @@ public class FlyListener implements Listener {
 	public FlyListener(BukkitDatabase db) {
 		this.database = db;
 		
-		if (!db.TableExists("bInvested_flying")) {
+		if (!db.tableExists("bInvested_flying")) {
 			String query = "CREATE TABLE `" + tableName + "` (`name` VARCHAR(16));";
 			
-			database.Query(query, true);
+			database.query(query, true);
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class FlyListener implements Listener {
 	public void onPlayerLeave(PlayerKickEvent event) {
 		if (event.getPlayer().getAllowFlight()) {
 			String query = "INSERT INTO `" + tableName + "` VALUES(" + event.getPlayer().getName() + ");";
-			database.Query(query, true);
+			database.query(query, true);
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class FlyListener implements Listener {
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		if (event.getPlayer().getAllowFlight()) {
 			String query = "INSERT INTO `" + tableName + "` VALUES(" + event.getPlayer().getName() + ");";
-			database.Query(query, true);
+			database.query(query, true);
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class FlyListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		String query = "SELECT `name` FROM `" + tableName + "` WHERE name='" + player.getName() + "'";
-		ResultSet rs = database.QueryResult(query);
+		ResultSet rs = database.queryResult(query);
 		
 		try {
 			if (rs != null && rs.next()) {
@@ -62,7 +62,7 @@ public class FlyListener implements Listener {
 				player.setFlying(true);
 				
 				query = "DELETE FROM `" + tableName + "` WHERE name='" + player.getName() + "';";
-				database.Query(query, true);
+				database.query(query, true);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

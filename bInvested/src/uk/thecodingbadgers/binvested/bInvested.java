@@ -26,7 +26,7 @@ public class bInvested extends Module {
 		
 		register(new FlyListener(m_database));
 		register(new ScubaListener());
-		register(new HungerListener(m_config.getDouble("hunger.rate", 0.25f)));
+		register(new HungerListener(getConfig().getDouble("hunger.rate", 0.25f)));
 		
 		log(Level.INFO, getName() + " version " + getVersion() + " has been enabled successfully");
 	}

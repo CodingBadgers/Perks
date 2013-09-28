@@ -4,20 +4,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 import uk.thecodingbadgers.bkits.bKits;
+import uk.thecodingbadgers.bkits.kit.parser.ParserType;
 
 /**
  * The Class KitHandler.
  */
 public class KitHandler {
 
-	/** The Constant instance. */
+	public static final String TABLE_NAME = "bKits_kits";
 	private static final KitHandler instance = new KitHandler();
-
-	/** The kits. */
 	private List<Kit> kits = new ArrayList<Kit>();
 	
 	/**
@@ -51,40 +54,76 @@ public class KitHandler {
 				continue;
 			}
 			
-			kit.give(player);
+			FundamentalPlayer fPlayer = bFundamentals.Players.getPlayer(player);
+			KitPlayerData data = (KitPlayerData) fPlayer.getPlayerData(KitPlayerData.class);
+			
+			if (data == null) {
+				data = new KitPlayerData(player.getName());
+			}
+			 
+			if (data.canUse(kit)) {
+				kit.give(player);
+				data.addKitTimeout(kit);
+			}
+			
+			fPlayer.addPlayerData(data);
 			return true;
 		}
 		return false;
+	}
+
+	public void setup() {
+		loadKits();
+		loadPlayerTimeouts();
 	}
 
 	/**
 	 * Load kits.
 	 */
 	public void loadKits() {
-		File kitConfig = new File(bKits.getInstance().getDataFolder(), "kits.yml");
+		File[] files = bKits.getInstance().getDataFolder().listFiles(new KitFilenameFilter());
 		
-		if (!kitConfig.exists()) {
+		for (File kitConfig : files) {
+			if (!kitConfig.exists()) {
+				try {
+					kitConfig.createNewFile();
+				} catch (IOException e) {
+					bKits.getInstance().getLogger().severe(bKits.getInstance().getLanguageValue("kits-create-error"));
+					e.printStackTrace();
+					return;
+				}
+			}
+	
 			try {
-				kitConfig.createNewFile();
+				kits.addAll(ParserType.parse(kitConfig));
 			} catch (IOException e) {
-				bKits.getInstance().getLogger().severe(bKits.getInstance().getLanguageValue("kits-create-error"));
 				e.printStackTrace();
-				return;
 			}
 		}
-
-		try {
-			KitParser parser = new KitParser(kitConfig);
-			parser.parseKits();
-		} catch (IOException e) {
-			e.printStackTrace();
+	}
+	
+	/**
+	 * Load the current timeouts for the players on the server.
+	 */
+	public void loadPlayerTimeouts() {
+		BukkitDatabase database = bKits.getDatabase();
+		
+		if (!database.tableExists(TABLE_NAME)) {
+			bKits.getInstance().log(Level.INFO, "Creating table " + TABLE_NAME);
+			String query = "CREATE TABLE " + TABLE_NAME + "(" +
+							"`player` VARCHAR (16) NOT NULL," +
+							"`kit` VARCHAR (16) NOT NULL," +
+							"`timout LONG);";
+			database.query(query, true);
 		}
+		
+		
 	}
 
 	/**
-	 * The amount of kits registed.
+	 * The amount of kits registered.
 	 *
-	 * @return the amount of kits
+	 * @return the amount of kits registered.
 	 */
 	public static int size() {
 		return getInstance().kits.size();
@@ -96,12 +135,15 @@ public class KitHandler {
 	 * @param player the player
 	 */
 	public void outputKits(Player player) {
-		String kitsText = bKits.getInstance().getLanguageValue("list");
+		StringBuilder kitsText = new StringBuilder();
+		kitsText.append(bKits.getInstance().getLanguageValue("list"));
 		
 		for (Kit kit : kits) {
-			kitsText += kit.getName() + " ";
+			if (bKits.hasPermission(player, "perks.bkits.kits." + kit.getName())) {
+				kitsText.append(kit.getName() + " ");
+			}
 		}
 		
-		bKits.sendMessage(bKits.getInstance().getName(), player, kitsText);
+		bKits.sendMessage(bKits.getInstance().getName(), player, kitsText.toString());
 	}
 }

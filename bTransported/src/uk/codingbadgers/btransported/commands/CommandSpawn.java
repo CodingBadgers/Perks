@@ -269,7 +269,7 @@ public class CommandSpawn extends ModuleCommand {
 				"'" + location.getPitch() + 
 				"');";
 		
-		db.Query(query);
+		db.query(query);
 	}
 	
 	/**
@@ -282,7 +282,7 @@ public class CommandSpawn extends ModuleCommand {
 		String query = "DELETE FROM `perks_spawn` " +
 				"WHERE world=" + "'" + worldName + "';";
 		
-		db.Query(query, true);
+		db.query(query, true);
 	}
 	
 	/**
@@ -290,7 +290,7 @@ public class CommandSpawn extends ModuleCommand {
 	 */
 	private void createDatabase() {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
-		if (!db.TableExists("perks_spawn")) {			
+		if (!db.tableExists("perks_spawn")) {			
 			String query = "CREATE TABLE perks_spawn (" +
 					"world VARCHAR(128)," +
 					"x INT," +
@@ -300,7 +300,7 @@ public class CommandSpawn extends ModuleCommand {
 					"pitch INT" +
 					");";
 			
-			db.Query(query, true);
+			db.query(query, true);
 		}
 	}
 	
@@ -312,7 +312,7 @@ public class CommandSpawn extends ModuleCommand {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
 		
 		String query = "SELECT * FROM perks_spawn";
-		ResultSet result = db.QueryResult(query);
+		ResultSet result = db.queryResult(query);
 		
 		if (result != null) {
 			try {
@@ -340,7 +340,7 @@ public class CommandSpawn extends ModuleCommand {
 				return;
 			}
 			
-			db.FreeResult(result);
+			db.freeResult(result);
 		}
 	}
 	
