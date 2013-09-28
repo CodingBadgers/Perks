@@ -37,7 +37,7 @@ public class FlyListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLeave(PlayerKickEvent event) {
 		if (event.getPlayer().getAllowFlight()) {
-			String query = "INSERT INTO `" + tableName + "` VALUES(" + event.getPlayer().getName() + ");";
+			String query = "INSERT INTO `" + tableName + "` VALUES('" + event.getPlayer().getName() + "');";
 			database.query(query, true);
 		}
 	}
@@ -45,7 +45,7 @@ public class FlyListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		if (event.getPlayer().getAllowFlight()) {
-			String query = "INSERT INTO `" + tableName + "` VALUES(" + event.getPlayer().getName() + ");";
+			String query = "INSERT INTO `" + tableName + "` VALUES('" + event.getPlayer().getName() + "');";
 			database.query(query, true);
 		}
 	}
