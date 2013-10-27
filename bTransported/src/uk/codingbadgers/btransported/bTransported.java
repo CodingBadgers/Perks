@@ -32,6 +32,7 @@ import uk.codingbadgers.btransported.commands.CommandSpawn;
 import uk.codingbadgers.btransported.commands.CommandWarp;
 import uk.codingbadgers.btransported.commands.tp.CommandTP;
 import uk.codingbadgers.btransported.commands.tp.CommandTPA;
+import uk.codingbadgers.btransported.commands.tp.CommandTPHere;
 import uk.codingbadgers.btransported.commands.tp.CommandTPR;
 import uk.codingbadgers.btransported.listeners.PlayerTeleportListener;
 
@@ -65,6 +66,7 @@ public class bTransported extends Module {
 		registerCommand(new CommandTP(this));
 		registerCommand(new CommandTPR(this));
 		registerCommand(new CommandTPA(this));
+		registerCommand(new CommandTPHere(this));
 		registerCommand(new CommandWarp(this));
 		registerCommand(new CommandSpawn(this));
 		
@@ -130,7 +132,8 @@ public class bTransported extends Module {
 			safeBlocks.add(Material.DETECTOR_RAIL.getId());
 			safeBlocks.add(Material.POWERED_RAIL.getId());
 			
-			m_teleportationConfiguration.addDefault("safe-blocks", safeBlocks);
+			m_teleportationConfiguration.addDefault("safe-blocks.blocks", safeBlocks);
+			m_teleportationConfiguration.addDefault("safe-blocks.enabled", false);
 			
 			m_teleportationConfiguration.addDefault("maximum-fall-distance", 5);
 

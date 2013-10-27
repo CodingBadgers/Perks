@@ -43,15 +43,19 @@ public class PlayerTeleportListener implements Listener {
 		final TeleportCause cause = event.getCause();
 		final Location from = event.getFrom();
 		final Location destination = event.getTo();
+		
+		if (player.getGameMode() == GameMode.CREATIVE) {
+			return;
+		}
 				
 		// If the player is not in creative and the block below them is unsafe, cancel the teleport
-		if (player.getGameMode() != GameMode.CREATIVE && !isTeleportSafe(player, destination)) {
+		if (!isTeleportSafe(player, destination)) {
 			event.setCancelled(true);
 			return;
 		}
 		
 		// If the player is not in creative and the teleport cause is blacklisted in that world cancel
-		if (player.getGameMode() != GameMode.CREATIVE && isBlacklistedTeleport(player, from, cause)) {
+		if (isBlacklistedTeleport(player, from, cause)) {
 			event.setCancelled(true);
 			return;
 		}
@@ -99,10 +103,12 @@ public class PlayerTeleportListener implements Listener {
 
 		FileConfiguration teleportConfiguration = m_module.getTeleportationConfig();
 		
-		List<Integer> whitelistedblocks = teleportConfiguration.getIntegerList("safe-blocks");
-		if (!whitelistedblocks.contains(block.getTypeId())) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("CANCEL-TELEPORT-NONSAFE"));
-			return false;
+		if (teleportConfiguration.getBoolean("safe-blocks.enabled")) {
+			List<Integer> whitelistedblocks = teleportConfiguration.getIntegerList("safe-blocks.blocks");
+			if (!whitelistedblocks.contains(block.getTypeId())) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("CANCEL-TELEPORT-NONSAFE"));
+				return false;
+			}
 		}
 
 		if (!player.isFlying()) {
