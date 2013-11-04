@@ -40,13 +40,18 @@ public class PlayerTeleportListener implements Listener {
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		
 		final Player player = event.getPlayer();
-		final TeleportCause cause = event.getCause();
-		final Location from = event.getFrom();
-		final Location destination = event.getTo();
 		
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			return;
 		}
+		
+		if (!m_module.getTeleportationConfig().getBoolean("teleport-protection-enabled")) {
+			return;
+		}
+		
+		final TeleportCause cause = event.getCause();
+		final Location from = event.getFrom();
+		final Location destination = event.getTo();
 				
 		// If the player is not in creative and the block below them is unsafe, cancel the teleport
 		if (!isTeleportSafe(player, destination)) {
