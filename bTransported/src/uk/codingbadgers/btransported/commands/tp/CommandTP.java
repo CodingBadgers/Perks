@@ -1,5 +1,6 @@
 package uk.codingbadgers.btransported.commands.tp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -166,6 +168,26 @@ public class CommandTP extends ModuleCommand {
 		
 		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-USAGE"));
 		return true;
+	}
+	
+	/**
+	 * Handle tab completion
+	 */
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		
+		List<String> matches = new ArrayList<String>();
+		if (args.length == 0)
+			return matches;
+		
+		String name = args[args.length - 1];
+		List<OfflinePlayer> players = m_module.matchPlayer(name, false);
+		for (OfflinePlayer player : players) {
+			matches.add(player.getName());
+		}
+		
+		return matches;
+		
 	}
 	
 }

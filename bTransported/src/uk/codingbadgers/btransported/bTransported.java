@@ -365,24 +365,14 @@ public class bTransported extends Module {
 	public List<OfflinePlayer> matchPlayer(String match, boolean onlineOnly) {
 		
 		Server server = m_plugin.getServer();
-		List<Player> onlineMatches = server.matchPlayer(match);
 		List<OfflinePlayer> matches = new ArrayList<OfflinePlayer>();
-		
-		// Add all the online players to our list
-		for (Player player : onlineMatches) {
-			matches.add((OfflinePlayer)player);
-		}
-		
-		// if we only want online players, return now
-		if (onlineOnly) {
-			return matches;
-		}
 		
 		OfflinePlayer[] offlinePlayers = server.getOfflinePlayers();
 		for (OfflinePlayer player : offlinePlayers) {
 			
-			if (matches.contains(player))
+			if (onlineOnly && !player.isOnline()) {
 				continue;
+			}
 			
 			final String playerName = player.getName();
 			
@@ -394,7 +384,7 @@ public class bTransported extends Module {
 			}
 			
 			// match is contained within this player add them to the list
-			if (playerName.toLowerCase().contains(match.toLowerCase())) {
+			if (playerName.toLowerCase().startsWith(match.toLowerCase())) {
 				matches.add(player);
 			}
 		}
