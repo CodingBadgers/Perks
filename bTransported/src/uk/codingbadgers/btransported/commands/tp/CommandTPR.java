@@ -1,5 +1,8 @@
 package uk.codingbadgers.btransported.commands.tp;
 
+import java.util.List;
+
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,7 +39,27 @@ public class CommandTPR extends ModuleCommand {
 		}
 		
 		if (args.length == 1) {
-			final String playerName = args[0];
+			
+			List<OfflinePlayer> playersWithName = m_module.matchPlayer(args[0], true);
+			if (playersWithName.isEmpty()) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-PLAYER-NOT-FOUND"));
+				return true;
+			}
+			
+			String playerName = null;	
+			
+			if (playersWithName.size() == 1) {
+				playerName = playersWithName.get(0).getName();
+			}
+			else {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-MULTIPLE-TARGETS"));
+				String targetList = "";
+				for (OfflinePlayer target : playersWithName) {
+					targetList = targetList + target.getName() + ", ";
+				}
+				Module.sendMessage("bTransported", player, targetList.substring(0, targetList.length() - 2));
+				return true;
+			}
 			
 			FundamentalPlayer requestPlayer = bFundamentals.Players.getPlayer(playerName);
 			if (requestPlayer == null) {

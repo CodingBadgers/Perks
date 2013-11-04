@@ -1,5 +1,7 @@
 package uk.codingbadgers.btransported.commands.tp;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -43,7 +45,27 @@ public class CommandTPHere extends ModuleCommand {
 		// Handle /tphere <playername>
 		if (args.length == 1) {
 			
-			final String tpPlayerName = args[0];
+			List<OfflinePlayer> playersWithName = m_module.matchPlayer(args[0], false);
+			if (playersWithName.isEmpty()) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-PLAYER-NOT-FOUND"));
+				return true;
+			}
+			
+			String tpPlayerName = null;	
+			
+			if (playersWithName.size() == 1) {
+				tpPlayerName = playersWithName.get(0).getName();
+			}
+			else {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-MULTIPLE-TARGETS"));
+				String targetList = "";
+				for (OfflinePlayer target : playersWithName) {
+					targetList = targetList + target.getName() + ", ";
+				}
+				Module.sendMessage("bTransported", player, targetList.substring(0, targetList.length() - 2));
+				return true;
+			}
+			
 			OfflinePlayer tpPlayer = Bukkit.getServer().getOfflinePlayer(tpPlayerName);
 			if (tpPlayer == null || !tpPlayer.hasPlayedBefore()) {
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TP-PLAYER-NOT-FOUND"));

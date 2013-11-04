@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -107,6 +108,8 @@ public class bTransported extends Module {
 			
 			// Create a Yaml configuration for the given config file
 			m_teleportationConfiguration = YamlConfiguration.loadConfiguration(configFile);
+			
+			m_teleportationConfiguration.addDefault("teleport-protection-enabled", true);
 			
 			// Add the default blocks
 			List<Integer> blackListedBlocks = new ArrayList<Integer>();
@@ -351,5 +354,51 @@ public class bTransported extends Module {
 		}
 		
 		return true;
+	}
+
+	/**
+	 * Get a list of players whose name matches a given string
+	 * @param match The name to match
+	 * @param onlineOnly Only return players who are currently online
+	 * @return A list of offline players whose names match the entry string
+	 */
+	public List<OfflinePlayer> matchPlayer(String match, boolean onlineOnly) {
+		
+		Server server = m_plugin.getServer();
+		List<Player> onlineMatches = server.matchPlayer(match);
+		List<OfflinePlayer> matches = new ArrayList<OfflinePlayer>();
+		
+		// Add all the online players to our list
+		for (Player player : onlineMatches) {
+			matches.add((OfflinePlayer)player);
+		}
+		
+		// if we only want online players, return now
+		if (onlineOnly) {
+			return matches;
+		}
+		
+		OfflinePlayer[] offlinePlayers = server.getOfflinePlayers();
+		for (OfflinePlayer player : offlinePlayers) {
+			
+			if (matches.contains(player))
+				continue;
+			
+			final String playerName = player.getName();
+			
+			// exact name, just return this
+			if (playerName.equalsIgnoreCase(match)) {
+				matches.clear();
+				matches.add(player);
+				return matches;
+			}
+			
+			// match is contained within this player add them to the list
+			if (playerName.toLowerCase().contains(match.toLowerCase())) {
+				matches.add(player);
+			}
+		}
+		
+		return matches;
 	}
 }
