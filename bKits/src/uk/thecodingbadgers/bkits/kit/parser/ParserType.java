@@ -48,10 +48,11 @@ public enum ParserType {
 	}
 	
 	public static List<Kit> parse(File config) throws IOException {
-		ParserType type = findByExtention(config.getName().substring(config.getName().lastIndexOf('.')));
+		String ext = config.getName().substring(config.getName().lastIndexOf('.') + 1);
+		ParserType type = findByExtention(ext);
 		
 		if (type == null) {
-			throw new IOException("Cannot find parser for file " + config.getName());
+			throw new IOException("Cannot find parser for file " + config.getName() + " (" + ext + ")");
 		}
 		
 		return type.parseConfig(config);

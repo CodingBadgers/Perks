@@ -21,6 +21,24 @@ public class KitPlayerData implements PlayerData {
 		
 		kits.put(kit.getName(), System.currentTimeMillis() + kit.getTimeout());
 	}
+	
+	public String getFormmatedTime(String kit) {
+		long elapsedTime = (kits.get(kit) - System.currentTimeMillis()) / 1000;  
+	    String format = String.format("%%0%dd", 2);
+	    String seconds = String.format(format, elapsedTime % 60);  
+	    String minutes = String.format(format, (elapsedTime % 3600) / 60);  
+	    String hours = String.format(format, elapsedTime / 3600);  
+	    String time = "";
+	    
+	    boolean showHours = !hours.equalsIgnoreCase("00");
+	    boolean showMinutes = !minutes.equalsIgnoreCase("00");
+	    boolean showSeconds = !seconds.equalsIgnoreCase("00");
+	    
+	    time += showHours ? hours + " hours, " : "";
+	    time += showMinutes ? minutes + (showSeconds ? " minutes and " : " minutes") : "";
+	    time += showSeconds ? seconds + " seconds" : "";  
+	    return time;
+	}
 
 	public void addKitTimeout(String kitname, long endtime) {
 		if (kits.containsKey(kitname)) {
