@@ -6,6 +6,7 @@ import uk.codingbadgers.bFundamentals.module.Module;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 import uk.thecodingbadgers.bkits.commands.KitCommand;
 import uk.thecodingbadgers.bkits.kit.KitHandler;
+import uk.thecodingbadgers.bkits.kit.TimeoutHandler;
 
 /**
  * The Class bKits.
@@ -50,6 +51,8 @@ public class bKits extends Module {
 		
 		loadLanguageFile();
 		KitHandler.getInstance().setup();
+		
+		register(new TimeoutHandler());
 		
 		log(Level.INFO,  getName() + " version " + getVersion() + " enabled.");	
 	}

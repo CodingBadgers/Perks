@@ -120,7 +120,7 @@ public class KitHandler {
 			String query = "CREATE TABLE " + TABLE_NAME + "(" +
 							"`player` VARCHAR (16) NOT NULL," +
 							"`kit` VARCHAR (16) NOT NULL," +
-							"`timout` LONG);";
+							"`timeout` LONG);";
 			database.query(query, true);
 		}
 		
