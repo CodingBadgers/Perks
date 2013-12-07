@@ -2,13 +2,16 @@ package uk.codingbadgers.btransported.commands;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -96,6 +99,7 @@ public class CommandWarp extends ModuleCommand {
 				m_warp.put(warpname, location);
 				addWarpToDatabase(warpname, location);
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-CREATED").replace("%warpname%", warpname));
+				return true;
 				
 			} else {
 				// Handle /warp <name>
@@ -135,6 +139,7 @@ public class CommandWarp extends ModuleCommand {
 				m_warp.put(warpname, location);
 				addWarpToDatabase(warpname, location);
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-CREATED").replace("%warpname%", warpname));
+				return true;
 				
 			} else if (command.equalsIgnoreCase("delete")) {
 				// Handle /warp delete <name>
@@ -146,7 +151,7 @@ public class CommandWarp extends ModuleCommand {
 				
 				final String warpname = args[1];
 				
-				if (m_warp.containsKey(warpname)) {
+				if (!m_warp.containsKey(warpname)) {
 					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NOT-FOUND"));
 					return true;
 				}				
@@ -306,5 +311,39 @@ public class CommandWarp extends ModuleCommand {
 			
 			db.freeResult(result);
 		}
+	}
+	
+	/**
+	 * Handle tab completion
+	 */
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		
+		Player player = null;
+		if (sender instanceof Player) {
+			player = (Player)sender;
+		}
+		
+		List<String> matches = new ArrayList<String>();
+		if (args.length == 0) {
+			for (String warpName : m_warp.keySet()) {
+				if (player == null || Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
+					matches.add(warpName);
+				}
+			}
+			return matches;
+		}
+		
+		String name = args[args.length - 1];
+		for (String warpName : m_warp.keySet()) {
+			if (warpName.toLowerCase().startsWith(name.toLowerCase())) {
+				if (player == null || Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
+					matches.add(warpName);
+				}
+			}
+		}
+		
+		return matches;
+		
 	}
 }
