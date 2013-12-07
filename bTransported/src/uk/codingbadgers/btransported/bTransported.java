@@ -20,13 +20,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.jnbt.CompoundTag;
-import org.jnbt.DoubleTag;
-import org.jnbt.ListTag;
-import org.jnbt.LongTag;
-import org.jnbt.NBTInputStream;
-import org.jnbt.NBTOutputStream;
-import org.jnbt.Tag;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.commands.CommandSpawn;
@@ -36,6 +29,13 @@ import uk.codingbadgers.btransported.commands.tp.CommandTPA;
 import uk.codingbadgers.btransported.commands.tp.CommandTPHere;
 import uk.codingbadgers.btransported.commands.tp.CommandTPR;
 import uk.codingbadgers.btransported.listeners.PlayerTeleportListener;
+import uk.jnbt.CompoundTag;
+import uk.jnbt.DoubleTag;
+import uk.jnbt.ListTag;
+import uk.jnbt.LongTag;
+import uk.jnbt.NBTInputStream;
+import uk.jnbt.NBTOutputStream;
+import uk.jnbt.Tag;
 
 /**
  * The Class bTransported.
@@ -332,9 +332,12 @@ public class bTransported extends Module {
 			}
 			
 			nbtOutputStream.writeTag(nbtTag);
+			tpPlayerBak.delete();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			tpPlayerDat.delete();
+			tpPlayerBak.renameTo(tpPlayerDat);			
 			return false;
 		} finally {	
 			try {
@@ -366,6 +369,8 @@ public class bTransported extends Module {
 		
 		Server server = m_plugin.getServer();
 		List<OfflinePlayer> matches = new ArrayList<OfflinePlayer>();
+		List<OfflinePlayer> matchesOnline = new ArrayList<OfflinePlayer>();
+		List<OfflinePlayer> matchesOffline = new ArrayList<OfflinePlayer>();
 		
 		OfflinePlayer[] offlinePlayers = server.getOfflinePlayers();
 		for (OfflinePlayer player : offlinePlayers) {
@@ -385,9 +390,16 @@ public class bTransported extends Module {
 			
 			// match is contained within this player add them to the list
 			if (playerName.toLowerCase().startsWith(match.toLowerCase())) {
-				matches.add(player);
+				if (player.isOnline()) {
+					matchesOnline.add(player);
+				} else {
+					matchesOffline.add(player);
+				}
 			}
 		}
+		
+		matches.addAll(matchesOnline);
+		matches.addAll(matchesOffline);
 		
 		return matches;
 	}
