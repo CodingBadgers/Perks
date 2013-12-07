@@ -12,6 +12,7 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 import uk.thecodingbadgers.bkits.bKits;
+import uk.thecodingbadgers.bkits.commands.KitCommand.CommandResult;
 import uk.thecodingbadgers.bkits.kit.parser.ParserType;
 
 /**
@@ -19,7 +20,7 @@ import uk.thecodingbadgers.bkits.kit.parser.ParserType;
  */
 public class KitHandler {
 
-	public static final String TABLE_NAME = "bKits_kits";
+	public static final String TABLE_NAME = bFundamentals.getConfigurationManager().getDatabaseSettings().prefix + "kits";
 	private static final KitHandler instance = new KitHandler();
 	private List<Kit> kits = new ArrayList<Kit>();
 	
@@ -48,7 +49,9 @@ public class KitHandler {
 	 * @param kitName the kit name
 	 * @return true if handled successfully, false otherwise
 	 */
-	public boolean handleKit(Player player, String kitName) {
+	public CommandResult handleKit(Player player, String kitName) {
+		CommandResult result = CommandResult.NOT_FOUND;
+		
 		for (Kit kit : kits) {
 			if (!kit.getName().equalsIgnoreCase(kitName)) {
 				continue;
@@ -61,15 +64,19 @@ public class KitHandler {
 				data = new KitPlayerData(player.getName());
 			}
 			 
+			
 			if (data.canUse(kit)) {
 				kit.give(player);
 				data.addKitTimeout(kit);
+				result = CommandResult.GIVEN;
+			} else {
+				result = CommandResult.TIMEOUT;
 			}
 			
 			fPlayer.addPlayerData(data);
-			return true;
 		}
-		return false;
+		
+		return result;
 	}
 
 	public void setup() {
@@ -113,7 +120,7 @@ public class KitHandler {
 			String query = "CREATE TABLE " + TABLE_NAME + "(" +
 							"`player` VARCHAR (16) NOT NULL," +
 							"`kit` VARCHAR (16) NOT NULL," +
-							"`timout LONG);";
+							"`timeout` LONG);";
 			database.query(query, true);
 		}
 		

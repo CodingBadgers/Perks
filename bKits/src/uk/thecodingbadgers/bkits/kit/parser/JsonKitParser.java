@@ -82,7 +82,7 @@ public class JsonKitParser extends KitParser {
 					ItemStack stack = new ItemStack(material, amount, dv);
 					
 					if (item.containsKey("enchantments")) {
-						for (Object enchObject : (JSONArray) item.get("enchants")) {
+						for (Object enchObject : (JSONArray) item.get("enchantments")) {
 							JSONObject ench = (JSONObject) enchObject;
 							Enchantment enchant = Enchantment.getById(((Number) ench.get("id")).intValue());
 

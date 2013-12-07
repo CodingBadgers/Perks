@@ -2,6 +2,7 @@ package uk.thecodingbadgers.bkits.kit;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import uk.codingbadgers.bFundamentals.player.PlayerData;
 
@@ -14,12 +15,34 @@ public class KitPlayerData implements PlayerData {
 		this.player = player;
 	}
 	
+	public Set<String> getKits() {
+		return kits.keySet();
+	}
+	
 	public void addKitTimeout(Kit kit) {
 		if (kits.containsKey(kit.getName())) {
 			return;
 		}
 		
 		kits.put(kit.getName(), System.currentTimeMillis() + kit.getTimeout());
+	}
+	
+	public String getFormmatedTime(String kit) {
+		long elapsedTime = (kits.get(kit) - System.currentTimeMillis()) / 1000;  
+	    String format = String.format("%%0%dd", 2);
+	    String seconds = String.format(format, elapsedTime % 60);  
+	    String minutes = String.format(format, (elapsedTime % 3600) / 60);  
+	    String hours = String.format(format, elapsedTime / 3600);  
+	    String time = "";
+	    
+	    boolean showHours = !hours.equalsIgnoreCase("00");
+	    boolean showMinutes = !minutes.equalsIgnoreCase("00");
+	    boolean showSeconds = !seconds.equalsIgnoreCase("00");
+	    
+	    time += showHours ? hours + " hours, " : "";
+	    time += showMinutes ? minutes + (showSeconds ? " minutes and " : " minutes") : "";
+	    time += showSeconds ? seconds + " seconds" : "";  
+	    return time;
 	}
 
 	public void addKitTimeout(String kitname, long endtime) {
@@ -61,6 +84,24 @@ public class KitPlayerData implements PlayerData {
 		return queries;
 	}
 	
+	public String geterateUpdateQuery(String kitname, String tablename) {
+		if (!kits.containsKey(kitname)) {
+			throw new IllegalArgumentException(player + " has not used kit " + kitname);
+		}
+		
+		String query;
+		long curTime = System.currentTimeMillis();
+		long time = kits.get(kitname);
+		
+		if (time - curTime <= 0) {
+			query = "REMOVE FROM" + tablename + " WHERE `kit`=" + kitname + " AND `player` LIKE '" + player + "';";
+		} else {
+			query = "UPDATE " + tablename + " SET `timeout`='" + time + "' WHERE `kit`='" + kitname + "' AND `player` LIKE '" + player + "';";
+		}
+		
+		return query;
+	}
+	
 	public String[] generateUpdateQueries(String tablename) {
 		String[] queries = new String[kits.size()];
 		int i = 0;
@@ -68,10 +109,11 @@ public class KitPlayerData implements PlayerData {
 		
 		for (Map.Entry<String, Long> entry : kits.entrySet()) {
 			if (entry.getValue() - curTime <= 0) {
-				
+				queries[i] = "REMOVE FROM" + tablename + " WHERE `kit`=" + entry.getKey() + " AND `player` LIKE '" + player + "';";
+			} else {
+				queries[i] = "UPDATE " + tablename + " SET `timeout`='" + entry.getValue() + "' WHERE `kit`='" + entry.getKey() + "' AND `player` LIKE '" + player + "';";
 			}
 			
-			queries[i] = "UPDATE " + tablename + " SET `timeout`='" + entry.getValue() + "' WHERE `kit`='" + entry.getKey() + "' AND `player` LIKE '" + player + "';";
 			i++;
 		}
 		

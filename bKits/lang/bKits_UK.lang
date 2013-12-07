@@ -10,6 +10,9 @@ This command can only be used as a player
 #given
 You have been given %kit% kit
 
+#not-given
+The kit %kit% does not exist
+
 #loaded
 Loaded %number% kits
 
