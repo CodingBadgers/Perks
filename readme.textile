@@ -1,12 +1,12 @@
-#Perks
+h1. Perks
 
-##What is Perks
+h2. What is Perks
 
 Perks is a collection of modules used by the badgercraft network (http://www.mcbadgercraft.com). A module system is uses so that we can easily update/disable/maintain large segments and or features. Doing such in a single plugin can become difficult. The other advantage to using a modular based system is that modules can easily be updated at runtime, meaning a server restart is not needed to add features or fix issues.
 
-##What modules exists
+h2. What modules exists
 
-###bTransported
+h3. bTransported
 
  * Handles /tp and /tphere
  * Handle teleport requests
@@ -15,7 +15,7 @@ Perks is a collection of modules used by the badgercraft network (http://www.mcb
  * Handles /home
  * Supports teleporting of and too offline players
 
-###bKits
+h3. bKits
 
 * Handles /kit
 * Supports Enchanting of items in kits
@@ -23,14 +23,14 @@ Perks is a collection of modules used by the badgercraft network (http://www.mcb
 * Supports Custom lores of items in kits
 * Has a per kit timeout, where by the kit can only be used every x minutes
 
-###bInvested
+h3. bInvested
 
 * Handles /fly and /land commands
 * Remembers fly state between sessions
 * Handles /workbench command (opens a full workbench inventory without needing a workbench)
 * Handles /ender command (opens a players enderchest without needing an enderchest)
 
-###bTheBoss [Admin Module]
+h3. bTheBoss [Admin Module]
 
 * Handles /clear command
 * Handles /collect command (restores a cleared inventory)
@@ -38,6 +38,6 @@ Perks is a collection of modules used by the badgercraft network (http://www.mcb
 * Handles /speed command (allows a player to change their fly speed)
 * Handles /vanish command (allows a player to become invisible)
 
-##License
+h2. License
 
 GNU GPL v2 - Please see LICENSE file for more information.
