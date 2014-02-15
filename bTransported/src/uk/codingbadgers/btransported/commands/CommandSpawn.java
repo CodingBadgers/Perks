@@ -29,10 +29,10 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 public class CommandSpawn extends ModuleCommand {
 	
 	/** The bFundamentals module */
-	private bTransported m_module = null;
+	private final bTransported m_module;
 	
 	/** A hash map of world spawns. The String is the world name, the Location is the location of the spawn */
-	private HashMap<String, Location> m_spawn = new HashMap<String, Location>();
+	private final HashMap<String, Location> m_spawn = new HashMap<String, Location>();
 
 	/**
 	 * Class constructor

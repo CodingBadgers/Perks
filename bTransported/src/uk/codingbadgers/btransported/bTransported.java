@@ -22,10 +22,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.btransported.commands.CommandHome;
 import uk.codingbadgers.btransported.commands.CommandSpawn;
 import uk.codingbadgers.btransported.commands.CommandWarp;
 import uk.codingbadgers.btransported.commands.tp.CommandTP;
 import uk.codingbadgers.btransported.commands.tp.CommandTPA;
+import uk.codingbadgers.btransported.commands.tp.CommandTPHR;
 import uk.codingbadgers.btransported.commands.tp.CommandTPHere;
 import uk.codingbadgers.btransported.commands.tp.CommandTPR;
 import uk.codingbadgers.btransported.listeners.PlayerTeleportListener;
@@ -65,11 +67,15 @@ public class bTransported extends Module {
 		
 		// Resiter the commands
 		registerCommand(new CommandTP(this));
-		registerCommand(new CommandTPR(this));
-		registerCommand(new CommandTPA(this));
 		registerCommand(new CommandTPHere(this));
+		
+		registerCommand(new CommandTPR(this));
+		registerCommand(new CommandTPHR(this));
+		registerCommand(new CommandTPA(this));
+		
 		registerCommand(new CommandWarp(this));
 		registerCommand(new CommandSpawn(this));
+        registerCommand(new CommandHome(this));
 		
 		// Register the player teleport listener
 		register(new PlayerTeleportListener(this));
@@ -85,8 +91,7 @@ public class bTransported extends Module {
 		final File folder = this.getDataFolder();
 		
 		// create the dangerous block configuration file
-		createTeleportConfiguration(folder);
-		
+		createTeleportConfiguration(folder);		
 	}
 	
 	/**
@@ -112,31 +117,13 @@ public class bTransported extends Module {
 			m_teleportationConfiguration.addDefault("teleport-protection-enabled", true);
 			
 			// Add the default blocks
-			List<Integer> blackListedBlocks = new ArrayList<Integer>();
-			blackListedBlocks.add(Material.LAVA.getId());
-			blackListedBlocks.add(Material.CACTUS.getId());
-			blackListedBlocks.add(Material.FIRE.getId());
+			List<String> blackListedBlocks = new ArrayList<String>();
+			blackListedBlocks.add(Material.LAVA.name());
+			blackListedBlocks.add(Material.STATIONARY_LAVA.name());
+			blackListedBlocks.add(Material.CACTUS.name());
+			blackListedBlocks.add(Material.FIRE.name());
 						
 			m_teleportationConfiguration.addDefault("dangerous-blocks", blackListedBlocks);
-			
-			List<Integer> safeBlocks = new ArrayList<Integer>();
-			safeBlocks.add(Material.AIR.getId());
-			safeBlocks.add(Material.WATER.getId());
-			safeBlocks.add(Material.SIGN.getId());
-			safeBlocks.add(Material.SIGN_POST.getId());
-			safeBlocks.add(Material.THIN_GLASS.getId());
-			safeBlocks.add(Material.LONG_GRASS.getId());
-			safeBlocks.add(Material.DEAD_BUSH.getId());
-			safeBlocks.add(Material.RED_ROSE.getId());
-			safeBlocks.add(Material.YELLOW_FLOWER.getId());
-			safeBlocks.add(Material.SAPLING.getId());
-			safeBlocks.add(Material.RAILS.getId());
-			safeBlocks.add(Material.ACTIVATOR_RAIL.getId());
-			safeBlocks.add(Material.DETECTOR_RAIL.getId());
-			safeBlocks.add(Material.POWERED_RAIL.getId());
-			
-			m_teleportationConfiguration.addDefault("safe-blocks.blocks", safeBlocks);
-			m_teleportationConfiguration.addDefault("safe-blocks.enabled", false);
 			
 			m_teleportationConfiguration.addDefault("maximum-fall-distance", 5);
 

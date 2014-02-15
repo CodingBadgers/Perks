@@ -15,12 +15,12 @@ import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
 import uk.codingbadgers.btransported.bTransported;
 import uk.codingbadgers.btransported.commands.tp.PlayerTPRData;
 
-public class CommandTPR extends ModuleCommand {
+public class CommandTPHR extends ModuleCommand {
 
 	private bTransported m_module = null;
 
-	public CommandTPR(bTransported module) {
-		super("btpr", "btpr <playername>");
+	public CommandTPHR(bTransported module) {
+		super("btphr", "btphr <playername>");
 		m_module = module;
 	}
 	
@@ -33,9 +33,9 @@ public class CommandTPR extends ModuleCommand {
 		
 		final Player player = (Player)sender;
 		
-		if (!Module.hasPermission(player, "perks.btransported.tpr")) {
+		if (!Module.hasPermission(player, "perks.btransported.tphr")) {
 			String formattedMessage = m_module.getLanguageValue("COMMAND-TP-NO-PERMISSION");
-			formattedMessage = formattedMessage.replace("%permission%", "perks.btransported.tpr");
+			formattedMessage = formattedMessage.replace("%permission%", "perks.btransported.tphr");
 			Module.sendMessage("bTransported", player, formattedMessage);
 			return true;
 		}
@@ -65,34 +65,34 @@ public class CommandTPR extends ModuleCommand {
 			
 			FundamentalPlayer requestPlayer = bFundamentals.Players.getPlayer(playerName);
 			if (requestPlayer == null) {
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPR-PLAYER-NOT-FOUND").replace("%playername%", playerName));
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPHR-PLAYER-NOT-FOUND").replace("%playername%", playerName));
 				return true;
 			}
 			
-			PlayerTPRData TPRData = (PlayerTPRData)requestPlayer.getPlayerData(PlayerTPRData.class);
-			if (TPRData == null) {
-				TPRData = new PlayerTPRData();
+			PlayerTPRData TPHRData = (PlayerTPRData)requestPlayer.getPlayerData(PlayerTPRData.class);
+			if (TPHRData == null) {
+				TPHRData = new PlayerTPRData();
 			}
 			
-			if (!TPRData.addTPRequest(player, requestPlayer.getPlayer())) {
+			if (!TPHRData.addTPHRequest(player, requestPlayer.getPlayer())) {
 				// Tell sender the request was sent
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPR-REQUEST-EXISTS").replace("%playername%", requestPlayer.getPlayer().getName()));
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPHR-REQUEST-EXISTS").replace("%playername%", requestPlayer.getPlayer().getName()));
 				return true;
 			}
 	
-			requestPlayer.addPlayerData(TPRData);
+			requestPlayer.addPlayerData(TPHRData);
 			
 			// Tell sender the request was sent
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPR-REQUEST-SENT").replace("%playername%", requestPlayer.getPlayer().getName()));
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPHR-REQUEST-SENT").replace("%playername%", requestPlayer.getPlayer().getName()));
 			
 			// Tell the player that the sender sent a request
-			Module.sendMessage("bTransported", requestPlayer.getPlayer(), m_module.getLanguageValue("COMMAND-TPR-RECEIVED-REQUEST").replace("%playername%", player.getName()));
+			Module.sendMessage("bTransported", requestPlayer.getPlayer(), m_module.getLanguageValue("COMMAND-TPHR-RECEIVED-REQUEST").replace("%playername%", player.getName()));
 			
 			return true;
 		}
 		
 		// invalid usage
-		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPR-USAGE"));
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-TPHR-USAGE"));
 		
 		return true;
 	}

@@ -19,7 +19,7 @@ public class CommandTPHere extends ModuleCommand {
 	private bTransported m_module = null;
 	
 	public CommandTPHere(bTransported module) {
-		super("tphere", "tphere <player>");
+		super("btphere", "btphere <player>");
 		m_module = module;
 	}
 	

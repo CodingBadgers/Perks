@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -67,6 +66,13 @@ public class PlayerTeleportListener implements Listener {
 	
 	}
 	
+	/**
+	 * 
+	 * @param player
+	 * @param location
+	 * @param cause
+	 * @return
+	 */
 	private boolean isBlacklistedTeleport(final Player player, final Location location, final TeleportCause cause) {
 		
 		FileConfiguration teleportConfiguration = m_module.getTeleportationConfig();
@@ -102,19 +108,19 @@ public class PlayerTeleportListener implements Listener {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param destination
+	 * @return
+	 */
 	private boolean isTeleportSafe(final Player player, final Location destination) {
-		
-		final Block block = destination.getBlock();
 
-		FileConfiguration teleportConfiguration = m_module.getTeleportationConfig();
+		// Always save in creative mode!
+		if (player.getGameMode() == GameMode.CREATIVE)
+			return true;
 		
-		if (teleportConfiguration.getBoolean("safe-blocks.enabled")) {
-			List<Integer> whitelistedblocks = teleportConfiguration.getIntegerList("safe-blocks.blocks");
-			if (!whitelistedblocks.contains(block.getTypeId())) {
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("CANCEL-TELEPORT-NONSAFE"));
-				return false;
-			}
-		}
+		final FileConfiguration teleportConfiguration = m_module.getTeleportationConfig();
 
 		if (!player.isFlying()) {
 			int maxFallDistance = teleportConfiguration.getInt("maximum-fall-distance");
@@ -128,11 +134,17 @@ public class PlayerTeleportListener implements Listener {
 				}
 			}
 			
-			List<Integer> blacklistedblocks = teleportConfiguration.getIntegerList("dangerous-blocks");
-			if (blacklistedblocks.contains(hightestBlock.getBlock().getTypeId())) {
+			List<String> blacklistedblocks = teleportConfiguration.getStringList("dangerous-blocks");
+			if (blacklistedblocks.contains(hightestBlock.getBlock().getType().name())) {
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("CANCEL-TELEPORT-DANGEROUS"));
 				return false;
 			}
+		}
+		
+		List<String> blacklistedblocks = teleportConfiguration.getStringList("dangerous-blocks");
+		if (blacklistedblocks.contains(destination.getBlock().getType().name())) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("CANCEL-TELEPORT-DANGEROUS"));
+			return false;
 		}
 		
 		return true;

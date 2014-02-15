@@ -2,15 +2,25 @@ package uk.codingbadgers.btransported.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
+import uk.codingbadgers.bFundamentals.bFundamentals;
 
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
+import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
+import uk.codingbadgers.btransported.commands.home.HomeGuiCallback;
+import uk.codingbadgers.btransported.commands.home.NewHomeGuiCallback;
+import uk.codingbadgers.btransported.commands.home.PlayerHome;
 
 /**
  * @author N3wton
@@ -18,11 +28,11 @@ import uk.codingbadgers.btransported.bTransported;
 public class CommandHome extends ModuleCommand {
 	
 	/** The bFundamentals module */
-	private bTransported m_module = null;
+	private final bTransported m_module;
+    
+    /** Map of player name to list of homes */
+    private final Map<String, List<PlayerHome>> m_homes;
 	
-	/**  */
-	private HashMap<String, HashMap<String, ArrayList<NamedLocation>>> m_homes = new HashMap<String, HashMap<String, ArrayList<NamedLocation>>>();
-
 	/**
 	 * Class constructor
 	 * @param module	The bFundamentals module
@@ -30,6 +40,7 @@ public class CommandHome extends ModuleCommand {
 	public CommandHome(bTransported module) {
 		super("home", "home | home <home name> | home <player name> <home name> | home set <name> | home delete <home name> | home delete <player name> <home name>");
 		m_module = module;
+        m_homes = new HashMap<String, List<PlayerHome>>();
 	}
 
 	@Override
@@ -41,7 +52,7 @@ public class CommandHome extends ModuleCommand {
 	 */
 	public boolean onCommand(CommandSender sender, String label, String[] args)
 	{
-		// /Spawn cannot be used via the console currently.
+		// /Home cannot be used via the console currently.
 		if (!(sender instanceof Player)) {
 			return true;
 		}
@@ -55,203 +66,81 @@ public class CommandHome extends ModuleCommand {
 			return true;
 		}
 		
-		// handle /home
-		if (args.length == 0) {
-			
-			HashMap<String, ArrayList<NamedLocation>> playerHomes = m_homes.get(player.getName());
-			if (playerHomes == null || playerHomes.isEmpty()) {
-				// player has no homes
-				return true;
-			}
-			
-			final String worldName = player.getLocation().getWorld().getName();
-			ArrayList<NamedLocation> worldHomes = playerHomes.get(worldName);
-			if (worldHomes == null || worldHomes.isEmpty()) {
-				// no homes in this world
-				return true;
-			}
-			
-			if (worldHomes.size() != 1) {
-				// more than one home, list all home names in this world
-				return true;
-			}
-			
-			// teleport the player to there home in this world
-			final NamedLocation location = worldHomes.get(0);
-			teleportPlayer(player, location);
-			return true;
-		}
-		// handle /home <home name>
-		else if (args.length == 1) {
-			
-			HashMap<String, ArrayList<NamedLocation>> playerHomes = m_homes.get(player.getName());
-			if (playerHomes == null || playerHomes.isEmpty()) {
-				// player has no homes
-				return true;
-			}
-			
-			// Try find a home with the given name
-			final String homeName = args[0];
-			NamedLocation homeLocation = findHome(homeName, playerHomes);
-			if (homeLocation == null) {
-				// could not find a home with the name
-				return true;
-			}
-			
-			teleportPlayer(player, homeLocation);
-			return true;			
-		}
-		// handle /home set <name> 
-		// handle /home delete <home name>
-		// handle /home <player name> <home name> 
-		else if (args.length == 2) {
-			
-			// handle /home set <name> 
-			if (args[0].equalsIgnoreCase("set")) {
-				
-				final String homeName = args[1];
-				
-				final Location location = player.getLocation();
-				final String worldName = location.getWorld().getName();
-	
-				HashMap<String, ArrayList<NamedLocation>> playerHomes = m_homes.get(player.getName());
-				
-				if (playerHomes != null) {
-					if (findHome(homeName, playerHomes) != null) {
-						// home name already in use
-						return true;
-					}
-					
-					final NamedLocation newHome = new NamedLocation(homeName, location);
-					
-					ArrayList<NamedLocation> worldHomes = playerHomes.get(worldName);
-					if (worldHomes == null) {
-						// player has no homes in this world
-						worldHomes = new ArrayList<NamedLocation>();
-						worldHomes.add(newHome);
-						playerHomes.put(worldName, worldHomes);
-					}
-					else {
-						// add to list of homes for this world
-						worldHomes.add(newHome);
-					}
-				} else {
-					// player has no homes at all
-					final NamedLocation newHome = new NamedLocation(homeName, location);
-					
-					playerHomes = new HashMap<String, ArrayList<NamedLocation>>();
-					ArrayList<NamedLocation> worldHomes = new ArrayList<NamedLocation>();
-					worldHomes.add(newHome);
-					playerHomes.put(worldName, worldHomes);
-					m_homes.put(player.getName(), playerHomes);
-				}
-								
-				return true;
-				
-			} 
-			// handle /home delete <home name>
-			else if (args[0].equalsIgnoreCase("delete")) {
-				
-				final String homeName = args[1];
-				HashMap<String, ArrayList<NamedLocation>> playerHomes = m_homes.get(player.getName());
-				if (playerHomes == null) {
-					// player has no homes
-					return true;
-				}
-				
-				if (!removeHome(homeName, player.getName())) {
-					// no home found with that name
-					return true;
-				}
-				
-				return true;
-				
-			} 
-			// handle /home <player name> <home name> 
-			else {
-				
-				final String playerName = args[0];
-				final String homeName = args[1];
-				
-				HashMap<String, ArrayList<NamedLocation>> playerHomes = m_homes.get(playerName);
-				if (playerHomes == null) {
-					// player has no homes
-					return true;
-				}
-				
-				NamedLocation playerHome = findHome(homeName, playerHomes);
-				if (playerHome == null) {
-					// player has no homes with that name
-					return true;
-				}
-				
-				teleportPlayer(player, playerHome);
-				return true;
-			}
-			
-		}
-		// handle /home delete <player name> <home name>
-		else if (args.length == 3) {
-			
-			final String playerName = args[1];
-			final String homeName = args[2];
-			
-			HashMap<String, ArrayList<NamedLocation>> playerHomes = m_homes.get(playerName);
-			if (playerHomes == null) {
-				// player has no homes
-				return true;
-			}
-			
-			if (!removeHome(homeName, playerName)) {
-				// no home found with that name
-				return true;
-			}
-			
-			return true;
-			
-		}
+        if (args.length == 0) {
+            
+            // handle /home
+            handleHomeGUI(player);
+            
+            return true;
+        }
 		
 		return false;
 	}
-
-	private boolean removeHome(String homeName, String playerName) {
-		
-		HashMap<String, ArrayList<NamedLocation>> playerHomes = m_homes.get(playerName);
-		if (playerHomes == null) {
-			// player has no homes
-			return false;
-		}
-		
-		for (Entry<String, ArrayList<NamedLocation>> worldHome : playerHomes.entrySet()) {
-			ArrayList<NamedLocation> worldHomes = worldHome.getValue();
-			for (NamedLocation location : worldHomes) {
-				if (location.name.equalsIgnoreCase(homeName)) {
-					worldHomes.remove(location);
-					return true;
-				}
-			}
-		}
-		
-		return false;		
-	}
-
-	private NamedLocation findHome(String name, HashMap<String, ArrayList<NamedLocation>> homes) {
-		
-		for (Entry<String, ArrayList<NamedLocation>> worldHome : homes.entrySet()) {
-			for (NamedLocation location : worldHome.getValue()) {
-				if (location.name.equalsIgnoreCase(name)) {
-					return location;
-				}
-			}
-		}
-		
-		return null;
-	}
-
-	private void teleportPlayer(Player player, NamedLocation location) {
-		
-		// teleported player to home
-		player.teleport(location.location);
-		
-	}
+    
+    private void handleHomeGUI(Player player) {
+        
+        GuiInventory inventory = new GuiInventory(bFundamentals.getInstance());
+        inventory.createInventory("Home Selection", 1);
+        
+        // If they already have homes, list them
+        if (m_homes.containsKey(player.getName()))
+        {
+            List<PlayerHome> homes = m_homes.get(player.getName());
+            
+            for (PlayerHome home : homes)
+            {
+                ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+                String[] details = new String[2];
+                details[0] = home.location.getBlockX() + ", " + home.location.getBlockY() + ", " + home.location.getBlockZ();
+                details[1] = home.location.getWorld().getName();
+                inventory.addMenuItem(home.name, item, details, new HomeGuiCallback(m_module, player, home));
+            }
+        }       
+        
+        Location playerLocation = player.getLocation();
+        
+        // Add the writen book home creator
+        ItemStack item = new ItemStack(Material.BOOK_AND_QUILL);
+        String[] details = new String[3];
+        details[0] = "Create a new home at";
+        details[1] = playerLocation.getBlockX() + ", " + playerLocation.getBlockY() + ", " + playerLocation.getBlockZ();
+        details[2] = "in " + playerLocation.getWorld().getName();
+        
+        final int LAST_SLOT = 8;
+        inventory.addMenuItem("New Home", item, details, LAST_SLOT, new NewHomeGuiCallback(m_module, player, this));
+        
+        inventory.open(player);
+        
+    }
+    
+    /**
+     * 
+     * @param player
+     * @param location
+     * @param name 
+     */
+    public void addNewHome(Player player, Location location, String name) {
+        
+        List<PlayerHome> homes;
+        if (m_homes.containsKey(player.getName())) {
+            homes = m_homes.get(player.getName());
+        } else {
+            homes = new ArrayList<PlayerHome>();
+        }
+        
+        if (homes.size() >= 8) {
+            Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-HOME-REACHED-MAX"));
+            return;
+        }
+        
+        PlayerHome home = new PlayerHome();
+        home.location = location;
+        home.name = name;
+        home.owner = player.getName();
+        
+        homes.add(home); 
+        
+        m_homes.put(player.getName(), homes);
+    }
+    
 }

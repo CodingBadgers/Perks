@@ -21,7 +21,7 @@ public class CommandTP extends ModuleCommand {
 	private bTransported m_module = null;
 
 	public CommandTP(bTransported module) {
-		super("tp", "tp <x> <y> <z> [world] | tp <otherplayer>");
+		super("btp", "btp <x> <y> <z> [world] | btp <otherplayer>");
 		m_module = module;
 	}
 	

@@ -9,10 +9,11 @@ import uk.codingbadgers.bFundamentals.player.PlayerData;
 
 public class PlayerTPRData implements PlayerData {
 	
-	private class TPRequest {
+	public class TPRequest {
 		public Player from;
 		public Player to;
 		public Long time;
+		public boolean hereRequest;
 	}
 	
 	private static Long TimeOutMS = 30000L;
@@ -29,6 +30,24 @@ public class PlayerTPRData implements PlayerData {
 		newRequest.from = from;
 		newRequest.to = to;
 		newRequest.time = Calendar.getInstance().getTimeInMillis();
+		newRequest.hereRequest = false;
+		
+		m_requests.add(newRequest);
+		
+		return true;
+	}
+	
+	public boolean addTPHRequest(Player from, Player to) {
+		
+		if (requestExists(from, to)) {
+			return false;			
+		}
+		
+		TPRequest newRequest = new TPRequest();
+		newRequest.from = to;
+		newRequest.to = from;
+		newRequest.time = Calendar.getInstance().getTimeInMillis();
+		newRequest.hereRequest = true;
 		
 		m_requests.add(newRequest);
 		
@@ -53,12 +72,12 @@ public class PlayerTPRData implements PlayerData {
 		return false;		
 	}
 	
-	public Player getLastRequest() {
+	public TPRequest getLastRequest() {
 		removeTimedOutRequests();
 		if (m_requests.size() == 0) {
 			return null;
 		}
-		return m_requests.get(m_requests.size() - 1).from;
+		return m_requests.get(m_requests.size() - 1);
 	}
 	
 	private void removeTimedOutRequests() {
