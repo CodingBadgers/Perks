@@ -16,12 +16,6 @@
     		<groupId>uk.thecodingbadgers</groupId>
     		<artifactId>bFundamentals</artifactId>
     		<version>1.2-SNAPSHOT</version>
-    		<exclusions>
-    			<exclusion>
-    				<artifactId>jNBT</artifactId>
-    				<groupId>org.jnbt</groupId>
-    			</exclusion>
-    		</exclusions>
     	</dependency>
     </dependencies>
 </project>
