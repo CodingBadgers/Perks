@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import uk.codingbadgers.bFundamentals.gui.GuiCallback;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
+import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
 
 /**
@@ -32,6 +33,7 @@ public class HomeGuiCallback implements GuiCallback {
     public void onClick(GuiInventory inventory, InventoryClickEvent clickEvent) {
         
         m_module.teleportOfflinePlayer(m_player, m_home.location);
+        Module.sendMessage("Home", m_player, m_module.getLanguageValue("COMMAND-HOME-TELEPORT-SUCCESS"));
         
     }
     

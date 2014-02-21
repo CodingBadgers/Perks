@@ -8,8 +8,19 @@
         <version>2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+	
+	<properties>
+		<bukkit.version>1.7.2-R0.3-SNAPSHOT</bukkit.version>
+    </properties>
 
     <artifactId>bTransported</artifactId>
+	
+	<repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+    </repositories>
     
     <dependencies>
     	<dependency>
@@ -23,5 +34,11 @@
     			</exclusion>
     		</exclusions>
     	</dependency>
+		<dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>${bukkit.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

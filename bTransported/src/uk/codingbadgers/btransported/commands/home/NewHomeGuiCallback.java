@@ -6,13 +6,18 @@
 
 package uk.codingbadgers.btransported.commands.home;
 
-import org.bukkit.Bukkit;
+import net.minecraft.server.v1_7_R1.Container;
+import net.minecraft.server.v1_7_R1.ContainerAnvil;
+import net.minecraft.server.v1_7_R1.EntityHuman;
+import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.PacketPlayOutOpenWindow;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_7_R1.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import uk.codingbadgers.bFundamentals.gui.GuiCallback;
@@ -41,24 +46,47 @@ public class NewHomeGuiCallback implements GuiCallback {
     @Override
     public void onClick(GuiInventory inventory, InventoryClickEvent clickEvent) {
 
+        // Close the homes inventory
         inventory.close(m_player);
-        m_player.closeInventory();
-        m_player.updateInventory();
         
-        // open an anvil gui for the name
-        /* TODO        
+        // open an anvil gui for the name          
         ItemStack dummyBook = new ItemStack(Material.BOOK_AND_QUILL);
         ItemMeta meta = dummyBook.getItemMeta();
         meta.setDisplayName("Enter Home Name...");
         dummyBook.setItemMeta(meta);
         
-        Inventory anvil = Bukkit.createInventory(m_player, InventoryType.ANVIL);
-        anvil.addItem(dummyBook);
-        m_player.openInventory(anvil);
-        */
+        openAnvilInventory(m_player, dummyBook);
+
+        //m_homeCommand.addNewHome(m_player, m_location, "My Home");
         
-        m_homeCommand.addNewHome(m_player, m_location, "My Home");
+    }
+    
+    private boolean openAnvilInventory(Player player, ItemStack item) {
+
+        // Get the entity player
+        EntityPlayer ePlayer = (EntityPlayer)((CraftHumanEntity)player).getHandle();
+
+        // Make an anvil and set the item in it
+        ContainerAnvil anvilContainer = new ContainerAnvil(ePlayer.inventory, ePlayer.world, 0, 0, 0, ePlayer);
+        if (item != null) {
+            anvilContainer.setItem(0, CraftItemStack.asNMSCopy(item));
+        }
         
+        // Fire an event just to be nice and make it cancelable
+        Container container = CraftEventFactory.callInventoryOpenEvent(ePlayer, anvilContainer);
+        if (container == null) {
+            return false;
+        }
+
+        // Open the inventory to the player
+        int containerCounter = ePlayer.nextContainerCounter();
+        ePlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, 8, "Repairing", 9, true));
+        ePlayer.activeContainer = container;
+        ePlayer.activeContainer.windowId = containerCounter;
+        ePlayer.activeContainer.addSlotListener(ePlayer);
+        ePlayer.activeContainer.checkReachable = false;
+        
+        return true;
     }
     
 }
