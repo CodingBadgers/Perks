@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 
@@ -25,7 +29,7 @@ import uk.codingbadgers.btransported.commands.home.PlayerHome;
 /**
  * @author N3wton
  */
-public class CommandHome extends ModuleCommand {
+public class CommandHome extends ModuleCommand implements Listener {
 
     /**
      * The bFundamentals module
@@ -36,6 +40,11 @@ public class CommandHome extends ModuleCommand {
      * Map of player name to list of homes
      */
     private final Map<String, List<PlayerHome>> m_homes;
+    
+    /**
+     * The name of the anvil inventory used for naming a home.
+     */
+    public static final String ANVIL_INVENTORY_NAME = "BF-HOME-ANVIL";
 
     /**
      * Class constructor
@@ -149,4 +158,72 @@ public class CommandHome extends ModuleCommand {
         Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-ADDED-NEW"));
     }
 
+    /**
+     * Handle click events within inventory's
+     *
+     * @param event The click event
+     */
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        
+        Inventory invent = event.getInventory();
+        if (invent.getType() != InventoryType.ANVIL) {
+            return;
+        }
+        
+        if (!invent.getName().equals(CommandHome.ANVIL_INVENTORY_NAME)) {
+            return;
+        }
+        
+        // we are in one of our anvil inventories
+        event.setCancelled(true);
+        
+        // Are they clicking the result slot?
+
+        final int ANVIL_RESULT_SLOT = 2;
+        if (event.getRawSlot() != ANVIL_RESULT_SLOT) {
+            return;
+        }
+        
+        // Get the slot item
+        ItemStack nameItem = invent.getItem(ANVIL_RESULT_SLOT);
+        if (nameItem == null) {
+            return;
+        }
+
+        // Setup the vars
+        Player player = (Player) event.getWhoClicked();
+        String name = nameItem.getItemMeta().getDisplayName();
+        Location location = player.getLocation();
+        
+        // Add the new home
+        addNewHome(player, location, name);
+        
+        // Close the inventory        
+        player.closeInventory();
+        player.updateInventory();
+              
+    }
+    
+    /**
+     * Handle click events within inventory's
+     *
+     * @param event The click event
+     */
+    @EventHandler
+    public void onInventoryClick(InventoryCloseEvent event) {
+        
+        Inventory invent = event.getInventory();
+        if (invent.getType() != InventoryType.ANVIL) {
+            return;
+        }
+        
+        if (!invent.getName().equals(CommandHome.ANVIL_INVENTORY_NAME)) {
+            return;
+        }
+        
+        // Remove all items from our home anvil
+        invent.setContents(new ItemStack[] {});        
+    }
+    
 }

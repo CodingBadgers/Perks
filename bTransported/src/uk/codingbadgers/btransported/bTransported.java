@@ -75,10 +75,13 @@ public class bTransported extends Module {
 		
 		registerCommand(new CommandWarp(this));
 		registerCommand(new CommandSpawn(this));
-        registerCommand(new CommandHome(this));
+                
+                CommandHome homeCommand = new CommandHome(this);
+                registerCommand(homeCommand);
 		
 		// Register the player teleport listener
 		register(new PlayerTeleportListener(this));
+                register(homeCommand);
 		
 		log(Level.INFO,  getName() + " version " + getVersion() + " enabled.");
 	}

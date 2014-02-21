@@ -8,6 +8,7 @@ package uk.codingbadgers.btransported.commands.home;
 
 import net.minecraft.server.v1_7_R1.Container;
 import net.minecraft.server.v1_7_R1.ContainerAnvil;
+import net.minecraft.server.v1_7_R1.ContainerAnvilInventory;
 import net.minecraft.server.v1_7_R1.EntityHuman;
 import net.minecraft.server.v1_7_R1.EntityPlayer;
 import net.minecraft.server.v1_7_R1.PacketPlayOutOpenWindow;
@@ -15,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R1.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_7_R1.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -56,8 +58,6 @@ public class NewHomeGuiCallback implements GuiCallback {
         dummyBook.setItemMeta(meta);
         
         openAnvilInventory(m_player, dummyBook);
-
-        //m_homeCommand.addNewHome(m_player, m_location, "My Home");
         
     }
     
@@ -72,12 +72,16 @@ public class NewHomeGuiCallback implements GuiCallback {
             anvilContainer.setItem(0, CraftItemStack.asNMSCopy(item));
         }
         
+        // Rename the inventory
+        CraftInventoryAnvil craftInventoryAnvil = (CraftInventoryAnvil)anvilContainer.getBukkitView().getTopInventory();
+        ContainerAnvilInventory containerAnvilInventory = (ContainerAnvilInventory)craftInventoryAnvil.getInventory();
+        containerAnvilInventory.a(CommandHome.ANVIL_INVENTORY_NAME);
+        
         // Fire an event just to be nice and make it cancelable
         Container container = CraftEventFactory.callInventoryOpenEvent(ePlayer, anvilContainer);
         if (container == null) {
             return false;
         }
-
         // Open the inventory to the player
         int containerCounter = ePlayer.nextContainerCounter();
         ePlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, 8, "Repairing", 9, true));
@@ -85,7 +89,7 @@ public class NewHomeGuiCallback implements GuiCallback {
         ePlayer.activeContainer.windowId = containerCounter;
         ePlayer.activeContainer.addSlotListener(ePlayer);
         ePlayer.activeContainer.checkReachable = false;
-        
+
         return true;
     }
     
