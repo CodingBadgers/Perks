@@ -31,13 +31,13 @@ import uk.codingbadgers.btransported.commands.tp.CommandTPHR;
 import uk.codingbadgers.btransported.commands.tp.CommandTPHere;
 import uk.codingbadgers.btransported.commands.tp.CommandTPR;
 import uk.codingbadgers.btransported.listeners.PlayerTeleportListener;
-import org.jnbt.CompoundTag;
-import org.jnbt.DoubleTag;
-import org.jnbt.ListTag;
-import org.jnbt.LongTag;
-import org.jnbt.NBTInputStream;
-import org.jnbt.NBTOutputStream;
-import org.jnbt.Tag;
+import uk.jnbt.CompoundTag;
+import uk.jnbt.DoubleTag;
+import uk.jnbt.ListTag;
+import uk.jnbt.LongTag;
+import uk.jnbt.NBTInputStream;
+import uk.jnbt.NBTOutputStream;
+import uk.jnbt.Tag;
 
 /**
  * The Class bTransported.
