@@ -179,7 +179,6 @@ public class CommandHome extends ModuleCommand implements Listener {
         event.setCancelled(true);
         
         // Are they clicking the result slot?
-
         final int ANVIL_RESULT_SLOT = 2;
         if (event.getRawSlot() != ANVIL_RESULT_SLOT) {
             return;
@@ -193,7 +192,7 @@ public class CommandHome extends ModuleCommand implements Listener {
 
         // Setup the vars
         Player player = (Player) event.getWhoClicked();
-        String name = nameItem.getItemMeta().getDisplayName();
+        String name = nameItem.getItemMeta().hasDisplayName() ? nameItem.getItemMeta().getDisplayName() : player.getName() + "s Home";
         Location location = player.getLocation();
         
         // Add the new home

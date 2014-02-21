@@ -32,8 +32,16 @@ public class HomeGuiCallback implements GuiCallback {
     @Override
     public void onClick(GuiInventory inventory, InventoryClickEvent clickEvent) {
         
-        m_module.teleportOfflinePlayer(m_player, m_home.location);
-        Module.sendMessage("Home", m_player, m_module.getLanguageValue("COMMAND-HOME-TELEPORT-SUCCESS"));
+        // Close the inventory first
+        inventory.close(m_player);
+        
+        // Teleport the player
+        if (m_module.teleportOfflinePlayer(m_player, m_home.location)) {
+            Module.sendMessage("Home", m_player, m_module.getLanguageValue("COMMAND-HOME-TELEPORT-SUCCESS"));
+        }
+        else {
+            Module.sendMessage("Home", m_player, m_module.getLanguageValue("COMMAND-HOME-TELEPORT-FAIL"));
+        }
         
     }
     

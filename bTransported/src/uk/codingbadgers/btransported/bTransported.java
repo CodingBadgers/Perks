@@ -243,6 +243,12 @@ public class bTransported extends Module {
 	 * @return True on success false otherwise
 	 */	
 	public boolean teleportOfflinePlayer(OfflinePlayer player, Location location) {
+            
+                if (player.isOnline()) {
+                    Player onlinePlayer = (Player) player;
+                    onlinePlayer.teleport(location);
+                    return true;
+                }
 	
 		// Get the player dat of the player we want to modify
 		final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".dat";

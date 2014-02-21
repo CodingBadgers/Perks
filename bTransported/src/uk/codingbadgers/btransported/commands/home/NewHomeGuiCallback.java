@@ -9,7 +9,6 @@ package uk.codingbadgers.btransported.commands.home;
 import net.minecraft.server.v1_7_R1.Container;
 import net.minecraft.server.v1_7_R1.ContainerAnvil;
 import net.minecraft.server.v1_7_R1.ContainerAnvilInventory;
-import net.minecraft.server.v1_7_R1.EntityHuman;
 import net.minecraft.server.v1_7_R1.EntityPlayer;
 import net.minecraft.server.v1_7_R1.PacketPlayOutOpenWindow;
 import org.bukkit.Location;
