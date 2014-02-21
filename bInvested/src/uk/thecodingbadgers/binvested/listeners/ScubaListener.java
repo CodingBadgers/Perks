@@ -7,11 +7,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 
 import uk.thecodingbadgers.binvested.bInvested;
 
 public class ScubaListener implements Listener {
 
+	private static final short SCUBA_DAMAGE = 5;
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDamage(EntityDamageEvent event) {
 		
@@ -25,8 +28,11 @@ public class ScubaListener implements Listener {
 			return;
 		}
 		
-		if (!(player.getEquipment().getHelmet().getType() == Material.GOLD_HELMET 
-				|| bInvested.hasPermission(player, "perks.binvested.scuba.plus")))  {
+		ItemStack helmet = player.getEquipment().getHelmet();
+		
+		if (helmet.getType() == Material.GOLD_HELMET) {
+			helmet.setDurability((short) (helmet.getDurability() - SCUBA_DAMAGE));
+		} else if (!bInvested.hasPermission(player, "perks.binvested.scuba.plus")) {
 			return;
 		}
 		
