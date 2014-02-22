@@ -110,7 +110,6 @@ public class CommandHome extends CommandPlaceBase {
 				m_maxHomeCount.put(group, maxHomes <= MAX_HOMES ? maxHomes : MAX_HOMES);
 			}
 		}
-		
 	}
 
     @Override
@@ -201,7 +200,7 @@ public class CommandHome extends CommandPlaceBase {
 	 * @param homeName The name of the home
 	 * @return True on success, false otherwise
 	 */
-    private boolean handleHomeRemove(Player sender, String playerName, String homeName) {
+    public boolean handleHomeRemove(Player sender, String playerName, String homeName) {
 		
 		// If the sender is not the owner of the home check they have perms
 		if (!sender.getName().equalsIgnoreCase(playerName)) {
@@ -300,7 +299,7 @@ public class CommandHome extends CommandPlaceBase {
 	 * Open up the home gui
 	 * @param player The player to show it too
 	 */
-    private void handleHomeGUI(Player player) {
+    public void handleHomeGUI(Player player) {
 		
 		if (!Module.hasPermission(player, "btransported.home")) {
 			Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-NO-PERMISSION"));
@@ -323,7 +322,7 @@ public class CommandHome extends CommandPlaceBase {
                 String[] details = new String[2];
                 details[0] = home.location.getBlockX() + ", " + home.location.getBlockY() + ", " + home.location.getBlockZ();
                 details[1] = home.location.getWorld().getName();
-                inventory.addMenuItem(home.name, item, details, new HomeGuiCallback(m_module, player, home));
+                inventory.addMenuItem(home.name, item, details, new HomeGuiCallback(m_module, player, home, this));
             }
         }
 		
