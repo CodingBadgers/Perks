@@ -23,6 +23,12 @@ public class HomeGuiCallback implements GuiCallback {
     private final PlayerHome m_home;
     private final bTransported m_module;
     
+    /**
+     *
+     * @param module
+     * @param player
+     * @param home
+     */
     public HomeGuiCallback(bTransported module, Player player, PlayerHome home) {
         m_player = player;
         m_home = home;

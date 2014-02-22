@@ -14,8 +14,19 @@ import org.bukkit.Location;
  */
 public class PlayerHome {
     
+    /**
+     *
+     */
     public String name;
+
+    /**
+     *
+     */
     public String owner;
+
+    /**
+     *
+     */
     public Location location;
     
 }

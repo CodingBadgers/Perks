@@ -2,7 +2,6 @@ package uk.codingbadgers.btransported.commands.tp;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,17 +10,24 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
 
+/**
+ *
+ * @author Sam
+ */
 public class CommandTP extends ModuleCommand {
 	
 	private bTransported m_module = null;
 
-	public CommandTP(bTransported module) {
-		super("btp", "btp <x> <y> <z> [world] | btp <otherplayer>");
+    /**
+     *
+     * @param module
+     */
+    public CommandTP(bTransported module) {
+		super("tp", "tp <x> <y> <z> [world] | tp <otherplayer>");
 		m_module = module;
 	}
 	
@@ -172,6 +178,7 @@ public class CommandTP extends ModuleCommand {
 	
 	/**
 	 * Handle tab completion
+     * @return 
 	 */
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {

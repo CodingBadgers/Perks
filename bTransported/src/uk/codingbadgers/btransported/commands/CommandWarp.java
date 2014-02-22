@@ -21,13 +21,21 @@ import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
+/**
+ *
+ * @author Sam
+ */
 public class CommandWarp extends ModuleCommand {
 
 	private bTransported m_module = null;
 	
 	private HashMap<String, Location> m_warp = new HashMap<String, Location>();
-	
-	public CommandWarp(bTransported module) {
+
+    /**
+     *
+     * @param module
+     */
+    public CommandWarp(bTransported module) {
 		super("warp", "warp <name> | warp <playername> <name> | warp all <name> | warp list | warp add <name> | warp delete <name> | warp set");
 		m_module = module;
 		
@@ -315,6 +323,7 @@ public class CommandWarp extends ModuleCommand {
 	
 	/**
 	 * Handle tab completion
+     * @return 
 	 */
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {

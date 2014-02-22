@@ -16,6 +16,10 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
 
+/**
+ *
+ * @author Sam
+ */
 public class PlayerTeleportListener implements Listener {
 	
 	/**

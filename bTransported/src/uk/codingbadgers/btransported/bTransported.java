@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,7 +19,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.commands.CommandHome;
 import uk.codingbadgers.btransported.commands.CommandSpawn;
@@ -240,6 +238,8 @@ public class bTransported extends Module {
 	
 	/**
 	 * Teleport an offline player to a given location
+     * @param player
+     * @param location
 	 * @return True on success false otherwise
 	 */	
 	public boolean teleportOfflinePlayer(OfflinePlayer player, Location location) {

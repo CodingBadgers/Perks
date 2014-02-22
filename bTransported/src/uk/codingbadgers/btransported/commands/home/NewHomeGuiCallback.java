@@ -37,6 +37,12 @@ public class NewHomeGuiCallback implements GuiCallback {
     private final Location m_location;
     private final CommandHome m_homeCommand;
     
+    /**
+     *
+     * @param module
+     * @param player
+     * @param homeCommand
+     */
     public NewHomeGuiCallback(bTransported module, Player player, CommandHome homeCommand) {
         m_module = module;
         m_player = player;

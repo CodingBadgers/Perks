@@ -2,25 +2,30 @@ package uk.codingbadgers.btransported.commands.tp;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
 import uk.codingbadgers.btransported.bTransported;
-import uk.codingbadgers.btransported.commands.tp.PlayerTPRData;
 
+/**
+ *
+ * @author Sam
+ */
 public class CommandTPHR extends ModuleCommand {
 
 	private bTransported m_module = null;
 
-	public CommandTPHR(bTransported module) {
-		super("btphr", "btphr <playername>");
+    /**
+     *
+     * @param module
+     */
+    public CommandTPHR(bTransported module) {
+		super("tphr", "tphr <playername>");
 		m_module = module;
 	}
 	
@@ -99,6 +104,7 @@ public class CommandTPHR extends ModuleCommand {
 	
 	/**
 	 * Handle tab completion
+     * @return 
 	 */
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
