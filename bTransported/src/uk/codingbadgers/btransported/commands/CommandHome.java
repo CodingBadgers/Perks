@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.Bukkit;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,7 +55,7 @@ public class CommandHome extends ModuleCommand implements Listener {
      * @param module	The bFundamentals module
      */
     public CommandHome(bTransported module) {
-        super("home", "home | home <home name> | home <player name> <home name> | home set <name> | home delete <home name> | home delete <player name> <home name>");
+        super("home", "home | home <home name> | home <player name> <home name> | home set <name> | home remove <home name> | home remove <player name> <home name>");
         m_module = module;
         m_homes = new HashMap<String, List<PlayerHome>>();
     }
@@ -88,10 +91,98 @@ public class CommandHome extends ModuleCommand implements Listener {
 
             return true;
         }
+        else if (args.length == 1) {
+            
+            // handle /home <home name>
+            handleHomeName(player, args[0]);
+            return true;
+            
+        }
+        else if (args.length == 2) {
+            
+            // handle /home <player name> <home name>
+            if (handleHomePlayerName(player, args[0], args[1])) {
+                return true;
+            }
+            
+            final String command = args[0];
+            if (command.equalsIgnoreCase("set")) {
+                addNewHome(player, player.getLocation(), args[1]);
+                return true;
+            }
+            else if (command.equalsIgnoreCase("remove")) {
+                handleHomeRemove(player.getName(), args[1]);
+                return true;
+            }
+            
+        }
+        else if (args.length == 3) {
+            
+            final String command = args[0];
+            if (command.equalsIgnoreCase("remove")) {
+                handleHomeRemove(args[1], args[2]);
+                return true;
+            }
+        }
 
         return false;
     }
+    
+    private boolean handleHomeRemove(String playerName, String homeName) {
+        
+        PlayerHome home = getHomeFromName(playerName, homeName);
+        if (home == null) {
+            return false;
+        }
+        
+        List<PlayerHome> homes = m_homes.get(playerName);
+        homes.remove(home);
+        m_homes.put(playerName, homes);
+        
+        return true;        
+    }
+    
+    private boolean handleHomePlayerName(Player player, String playerName, String homeName) {
+        
+        OfflinePlayer homePlayer = Bukkit.getOfflinePlayer(playerName);
+        if (!homePlayer.hasPlayedBefore()) {
+            return false;
+        }
+        
+        PlayerHome home = getHomeFromName(playerName, homeName);
+        if (home == null) {
+            return false;
+        }
 
+        return m_module.teleportOfflinePlayer(player, home.location);
+    }
+    
+    private boolean handleHomeName(Player player, String homeName) {
+        
+        PlayerHome home = getHomeFromName(player.getName(), homeName);
+        if (home == null) {
+            return false;
+        }
+
+        return m_module.teleportOfflinePlayer(player, home.location);
+    }
+
+    private PlayerHome getHomeFromName(String playername, String homeName) {
+        
+        if (!m_homes.containsKey(playername)) {
+            return null;
+        }
+        
+        List<PlayerHome> homes = m_homes.get(playername);
+        for (PlayerHome home : homes) {
+            if (home.name.equalsIgnoreCase(homeName)) {
+                return home;
+            }
+        }
+        
+        return null;
+    }
+    
     private void handleHomeGUI(Player player) {
 
         GuiInventory inventory = new GuiInventory(bFundamentals.getInstance());
@@ -127,13 +218,34 @@ public class CommandHome extends ModuleCommand implements Listener {
     }
 
     /**
+     * Format a home name into a non spaced camel case name
+     * @param name The name to format
+     * @return The formated version of the name
+     */
+    private String formatHomeName(String name) {
+        
+        name = name.toLowerCase();
+        String[] nameParts = name.split(" ");
+        String formattedName = "";
+        for (String part : nameParts) {
+            String camelPart = part.substring(0, 1).toUpperCase();
+            if (part.length() > 1) {
+                camelPart += part.substring(1);
+            }
+            formattedName += camelPart;
+        }      
+        
+        return formattedName;
+    }
+    
+    /**
      *
      * @param player
      * @param location
      * @param name
      */
     public void addNewHome(Player player, Location location, String name) {
-
+        
         List<PlayerHome> homes;
         if (m_homes.containsKey(player.getName())) {
             homes = m_homes.get(player.getName());
@@ -148,7 +260,7 @@ public class CommandHome extends ModuleCommand implements Listener {
 
         PlayerHome home = new PlayerHome();
         home.location = location;
-        home.name = name;
+        home.name = formatHomeName(name);
         home.owner = player.getName();
 
         homes.add(home);
@@ -225,4 +337,54 @@ public class CommandHome extends ModuleCommand implements Listener {
         invent.setContents(new ItemStack[] {});        
     }
     
+    /**
+     * Handle tab completion
+     * @return A list of matches
+     */
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+
+        List<String> matches = new ArrayList<String>();
+        if (args.length == 0)
+            return matches;
+
+        String playerName = sender.getName();
+                
+        //home remove <home name>
+        //home remove <player name> <home name>
+        if (args.length >= 2 && args[0].equalsIgnoreCase("remove")) {
+            
+            if (args.length == 3) {
+                playerName = args[1];
+            }
+            
+            if (!m_homes.containsKey(playerName)) {
+                return matches;
+            }
+            
+            List<PlayerHome> homes = m_homes.get(playerName);
+            for (PlayerHome home : homes) {
+                matches.add(home.name);
+            }            
+        }
+        //home <home name>
+        //home <player name> <home name>
+        else if (args.length >= 1) {
+            
+            if (args.length == 2) {
+                playerName = args[0];
+            }
+            
+            if (!m_homes.containsKey(playerName)) {
+                return matches;
+            }
+            
+            List<PlayerHome> homes = m_homes.get(playerName);
+            for (PlayerHome home : homes) {
+                matches.add(home.name);
+            }            
+        }
+
+        return matches;
+    }
 }
