@@ -5,23 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import uk.codingbadgers.bFundamentals.bFundamentals;
-
-import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
@@ -32,12 +23,7 @@ import uk.codingbadgers.btransported.commands.home.PlayerHome;
 /**
  * @author N3wton
  */
-public class CommandHome extends ModuleCommand implements Listener {
-
-    /**
-     * The bFundamentals module
-     */
-    private final bTransported m_module;
+public class CommandHome extends CommandPlaceBase {
 
     /**
      * Map of player name to list of homes
@@ -55,9 +41,13 @@ public class CommandHome extends ModuleCommand implements Listener {
      * @param module	The bFundamentals module
      */
     public CommandHome(bTransported module) {
-        super("home", "home | home <home name> | home <player name> <home name> | home set <name> | home remove <home name> | home remove <player name> <home name>");
-        m_module = module;
-        m_homes = new HashMap<String, List<PlayerHome>>();
+        super(
+			module, 
+			ANVIL_INVENTORY_NAME, 
+			"home", 
+			"home | home <home name> | home <player name> <home name> | home set <name> | home remove <home name> | home remove <player name> <home name>"
+		);
+		m_homes = new HashMap<String, List<PlayerHome>>();
     }
 
     @Override
@@ -269,73 +259,6 @@ public class CommandHome extends ModuleCommand implements Listener {
         
         Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-ADDED-NEW"));
     }
-
-    /**
-     * Handle click events within inventory's
-     *
-     * @param event The click event
-     */
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        
-        Inventory invent = event.getInventory();
-        if (invent.getType() != InventoryType.ANVIL) {
-            return;
-        }
-        
-        if (!invent.getName().equals(CommandHome.ANVIL_INVENTORY_NAME)) {
-            return;
-        }
-        
-        // we are in one of our anvil inventories
-        event.setCancelled(true);
-        
-        // Are they clicking the result slot?
-        final int ANVIL_RESULT_SLOT = 2;
-        if (event.getRawSlot() != ANVIL_RESULT_SLOT) {
-            return;
-        }
-        
-        // Get the slot item
-        ItemStack nameItem = invent.getItem(ANVIL_RESULT_SLOT);
-        if (nameItem == null) {
-            return;
-        }
-
-        // Setup the vars
-        Player player = (Player) event.getWhoClicked();
-        String name = nameItem.getItemMeta().hasDisplayName() ? nameItem.getItemMeta().getDisplayName() : player.getName() + "s Home";
-        Location location = player.getLocation();
-        
-        // Add the new home
-        addNewHome(player, location, name);
-        
-        // Close the inventory        
-        player.closeInventory();
-        player.updateInventory();
-              
-    }
-    
-    /**
-     * Handle click events within inventory's
-     *
-     * @param event The click event
-     */
-    @EventHandler
-    public void onInventoryClick(InventoryCloseEvent event) {
-        
-        Inventory invent = event.getInventory();
-        if (invent.getType() != InventoryType.ANVIL) {
-            return;
-        }
-        
-        if (!invent.getName().equals(CommandHome.ANVIL_INVENTORY_NAME)) {
-            return;
-        }
-        
-        // Remove all items from our home anvil
-        invent.setContents(new ItemStack[] {});        
-    }
     
     /**
      * Handle tab completion
@@ -387,4 +310,12 @@ public class CommandHome extends ModuleCommand implements Listener {
 
         return matches;
     }
+
+	@Override
+	/**
+	 * 
+	 */
+	protected void onAnvilNameComplete(Player player, Location location, String name) {
+		addNewHome(player, location, name);
+	}
 }
