@@ -99,12 +99,15 @@ public class CommandHome extends CommandPlaceBase {
 		// Load the config
 		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
-		m_maxHomeCount.put("default", config.getInt("maxhomes.default"));
+		final int MAX_HOMES = 53;		
+		int maxHomes = config.getInt("maxhomes.default");
+		m_maxHomeCount.put("default", maxHomes <= MAX_HOMES ? maxHomes : MAX_HOMES);
 		
 		String[] groups = bFundamentals.getPermissions().getGroups();
 		for (String group : groups) {
 			if (config.contains("maxhomes." + group)) {
-				m_maxHomeCount.put(group, config.getInt("maxhomes." + group));
+				maxHomes = config.getInt("maxhomes." + group);
+				m_maxHomeCount.put(group, maxHomes <= MAX_HOMES ? maxHomes : MAX_HOMES);
 			}
 		}
 		
