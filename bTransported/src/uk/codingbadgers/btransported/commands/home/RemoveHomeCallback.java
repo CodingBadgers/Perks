@@ -21,18 +21,16 @@ public class RemoveHomeCallback implements GuiCallback  {
 	private final Player m_player;
     private final PlayerHome m_home;
     private final CommandHome m_command;
-	private final GuiInventory m_previousMenu;
-	
-	public RemoveHomeCallback(CommandHome command, Player player, PlayerHome home, GuiInventory inventory) {
+
+	public RemoveHomeCallback(CommandHome command, Player player, PlayerHome home) {
 		m_player = player;
         m_home = home;
         m_command = command;
-		m_previousMenu = inventory;
 	}
 
 	@Override
 	public void onClick(GuiInventory inventory, InventoryClickEvent clickEvent) {
-		m_command.handleHomeRemove(m_player, m_player.getName(), m_home.name);
+		m_command.handleHomeRemove(m_player, m_player.getName(), m_home.getName());
 		m_command.handleHomeGUI(m_player);
 	}
 	

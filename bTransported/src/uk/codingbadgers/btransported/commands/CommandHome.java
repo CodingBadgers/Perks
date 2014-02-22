@@ -1,6 +1,8 @@
 package uk.codingbadgers.btransported.commands;
 
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,6 +26,7 @@ import uk.codingbadgers.btransported.bTransported;
 import uk.codingbadgers.btransported.commands.home.HomeGuiCallback;
 import uk.codingbadgers.btransported.commands.home.NewHomeGuiCallback;
 import uk.codingbadgers.btransported.commands.home.PlayerHome;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
  * @author N3wton
@@ -60,7 +64,118 @@ public class CommandHome extends CommandPlaceBase {
 		m_maxHomeCount = new HashMap<String, Integer>();
 		
 		loadConfig();
+		createDatabase();
+		loadHomesFromDatabase();
     }
+	
+	/**
+	 * Create the homes database
+	 */
+	private void createDatabase() {
+		BukkitDatabase db = bFundamentals.getBukkitDatabase();
+		if (!db.tableExists("perks_homes")) {			
+			String query = "CREATE TABLE perks_homes (" +
+					"hash BIGINT," +																			
+					"name VARCHAR(64)," +
+					"owner VARCHAR(64)," +
+					"world VARCHAR(128)," +
+					"x FLOAT," +
+					"y FLOAT," +
+					"z FLOAT," +
+					"yaw FLOAT," +
+					"pitch FLOAT" +
+					");";
+			
+			db.query(query, true);
+		}
+	}
+		
+	/**
+	 * Add a home to the homes database
+	 * @param home The home to add
+	 */
+	private void addHomeToDatabase(final PlayerHome home) {
+		BukkitDatabase db = bFundamentals.getBukkitDatabase();
+		
+		String query = "INSERT INTO `perks_homes` " +
+				"(`hash`,`name`,`owner`,`world`,`x`,`y`,`z`,`yaw`,`pitch`) VALUES (" + 
+				"'" + home.getHash() + "'," +
+				"'" + home.getName() + "'," +
+				"'" + home.getOwnerName() + "'," +
+				"'" + home.getLocation().getWorld().getName() + "'," +
+				"'" + home.getLocation().getX() + "'," +
+				"'" + home.getLocation().getY() + "'," +
+				"'" + home.getLocation().getZ() + "'," +
+				"'" + home.getLocation().getYaw() + "'," +
+				"'" + home.getLocation().getPitch() + 
+				"');";
+		
+		db.query(query);
+	}
+	
+	/**
+	 * Remove a home from the database
+	 * @param home The home to remove 
+	 */
+	private void removeHomeFromDatabase(final PlayerHome home) {
+		BukkitDatabase db = bFundamentals.getBukkitDatabase();
+		
+		String query = "DELETE FROM `perks_homes` " +
+				"WHERE hash=" + "'" + home.getHash() + "';";
+		
+		db.query(query, true);
+	}
+	
+	/**
+	 * Load all homes from the database
+	 */
+	private void loadHomesFromDatabase() {
+		
+		BukkitDatabase db = bFundamentals.getBukkitDatabase();
+		
+		String query = "SELECT * FROM perks_homes";
+		ResultSet result = db.queryResult(query);
+		
+		if (result != null) {
+			try {
+				// while we have another result, read in the data
+				while (result.next()) {
+		            String worldName = result.getString("world");
+		            String homeName = result.getString("name");
+					String ownerName = result.getString("owner");
+					
+					int hash = result.getInt("hash");
+	
+		            float x = result.getFloat("x");
+		            float y = result.getFloat("y");
+		            float z = result.getFloat("z");
+		            float pitch = result.getFloat("pitch");
+		            float yaw = result.getFloat("yaw");
+		            
+		            World world = Bukkit.getServer().getWorld(worldName);
+		            Location location = new Location(world, x, y, z, yaw, pitch);
+					
+					List<PlayerHome> homes;
+					if (m_homes.containsKey(ownerName)) {
+						homes = m_homes.get(ownerName);
+					} else {
+						homes = new ArrayList<PlayerHome>();
+					}
+					
+					PlayerHome home = new PlayerHome(homeName, ownerName, location, hash);
+					homes.add(home);
+					
+					m_homes.put(ownerName, homes);
+		        }
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return;
+			}
+			
+			db.freeResult(result);
+		}
+		
+	}
 	
 	/**
 	 * Load the homes config
@@ -220,6 +335,8 @@ public class CommandHome extends CommandPlaceBase {
         homes.remove(home);
         m_homes.put(playerName, homes);
 		
+		removeHomeFromDatabase(home);
+		
 		Module.sendMessage("Home", sender, m_module.getLanguageValue("COMMAND-HOME-REMOVED"));
         return true;        
     }
@@ -253,7 +370,7 @@ public class CommandHome extends CommandPlaceBase {
             return false;
         }
 
-        return m_module.teleportOfflinePlayer(player, home.location);
+        return m_module.teleportOfflinePlayer(player, home.getLocation());
     }
     
 	/**
@@ -270,7 +387,7 @@ public class CommandHome extends CommandPlaceBase {
             return false;
         }
 
-        return m_module.teleportOfflinePlayer(player, home.location);
+        return m_module.teleportOfflinePlayer(player, home.getLocation());
     }
 
 	/**
@@ -287,7 +404,7 @@ public class CommandHome extends CommandPlaceBase {
         
         List<PlayerHome> homes = m_homes.get(playername);
         for (PlayerHome home : homes) {
-            if (home.name.equalsIgnoreCase(homeName)) {
+            if (home.getName().equalsIgnoreCase(homeName)) {
                 return home;
             }
         }
@@ -320,9 +437,9 @@ public class CommandHome extends CommandPlaceBase {
             for (PlayerHome home : homes) {
                 ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
                 String[] details = new String[2];
-                details[0] = home.location.getBlockX() + ", " + home.location.getBlockY() + ", " + home.location.getBlockZ();
-                details[1] = home.location.getWorld().getName();
-                inventory.addMenuItem(home.name, item, details, new HomeGuiCallback(m_module, player, home, this));
+                details[0] = home.getLocation().getBlockX() + ", " + home.getLocation().getBlockY() + ", " + home.getLocation().getBlockZ();
+                details[1] = home.getLocation().getWorld().getName();
+                inventory.addMenuItem(home.getName(), item, details, new HomeGuiCallback(m_module, player, home, this));
             }
         }
 		
@@ -394,14 +511,11 @@ public class CommandHome extends CommandPlaceBase {
             return;
         }
 
-        PlayerHome home = new PlayerHome();
-        home.location = location;
-        home.name = formatHomeName(name);
-        home.owner = player.getName();
-
+        PlayerHome home = new PlayerHome(formatHomeName(name), player.getName(), location);
         homes.add(home);
 
         m_homes.put(player.getName(), homes);
+		addHomeToDatabase(home);
         
         Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-ADDED-NEW"));
     }
@@ -446,13 +560,13 @@ public class CommandHome extends CommandPlaceBase {
 			final String homeLookup = args[args.length - 1];
 			
             for (PlayerHome home : homes) {
-				if (home.name.equalsIgnoreCase(homeLookup)) {
-					matches.add(home.name);
+				if (home.getName().equalsIgnoreCase(homeLookup)) {
+					matches.add(home.getName());
 					continue;
 				}
 				
-				if (home.name.toLowerCase().startsWith(homeLookup)) {
-					matches.add(home.name);
+				if (home.getName().toLowerCase().startsWith(homeLookup)) {
+					matches.add(home.getName());
 				}
             }            
         }

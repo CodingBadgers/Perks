@@ -51,7 +51,7 @@ public class HomeGuiCallback implements GuiCallback {
         
 		// Teleport the player
 		if (clickEvent.isLeftClick()) {
-			if (m_module.teleportOfflinePlayer(m_player, m_home.location)) {
+			if (m_module.teleportOfflinePlayer(m_player, m_home.getLocation())) {
 				Module.sendMessage("Home", m_player, m_module.getLanguageValue("COMMAND-HOME-TELEPORT-SUCCESS"));
 			}
 			else {
@@ -62,14 +62,14 @@ public class HomeGuiCallback implements GuiCallback {
 		else if (clickEvent.isRightClick()) {
 			
 			GuiInventory deleteHomeInventory = new GuiInventory(bFundamentals.getInstance());
-			deleteHomeInventory.createInventory("Remove Home '" + m_home.name + "'", 3);
+			deleteHomeInventory.createInventory("Remove Home '" + m_home.getName() + "'", 3);
 			
 			// Add confirm dye
 			ItemStack itemConfirm = new ItemStack(Material.INK_SACK, 1, (short)2);
 			String[] confirmDetails = new String[1];
 			confirmDetails[0] = ChatColor.GOLD + "WARNING: This can not be undone!";
-			RemoveHomeCallback removecallback = new RemoveHomeCallback(m_command, m_player, m_home, inventory);
-			deleteHomeInventory.addMenuItem(ChatColor.DARK_GREEN + "Remove " + m_home.name, itemConfirm, confirmDetails, 11, removecallback);
+			RemoveHomeCallback removecallback = new RemoveHomeCallback(m_command, m_player, m_home);
+			deleteHomeInventory.addMenuItem(ChatColor.DARK_GREEN + "Remove " + m_home.getName(), itemConfirm, confirmDetails, 11, removecallback);
 				
 			// Add cancel dye
 			ItemStack itemCancel = new ItemStack(Material.INK_SACK, 1, (short)1);
