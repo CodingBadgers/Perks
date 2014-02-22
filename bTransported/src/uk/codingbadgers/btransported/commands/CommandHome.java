@@ -304,8 +304,12 @@ public class CommandHome extends CommandPlaceBase {
 			return;
 		}
 
+		final int maxHomes = this.getMaxHomes(player);
+		final int ROW_COUNT = (int) Math.ceil(maxHomes / 9.0f);
+		final int LAST_SLOT = (ROW_COUNT * 9) - 1;
+		
         GuiInventory inventory = new GuiInventory(bFundamentals.getInstance());
-        inventory.createInventory("Home Selection", 1);
+        inventory.createInventory("Home Selection (" + getHomeCount(player) + "/" + maxHomes + ")", ROW_COUNT);
 
         // If they already have homes, list them
         if (m_homes.containsKey(player.getName())) {
@@ -319,7 +323,7 @@ public class CommandHome extends CommandPlaceBase {
                 inventory.addMenuItem(home.name, item, details, new HomeGuiCallback(m_module, player, home));
             }
         }
-
+		
 		if (getHomeCount(player) >= getMaxHomes(player)) {
 			// max home count reached
 			ItemStack item = new ItemStack(Material.BOOKSHELF);
@@ -328,8 +332,7 @@ public class CommandHome extends CommandPlaceBase {
 			details[1] = "number of homes possible for your rank.";
 			details[2] = "Remove other homes or rank up to";
 			details[3] = "add more homes.";
-
-			final int LAST_SLOT = 8;
+			
 			inventory.addMenuItem("Max Homes Reached", item, details, LAST_SLOT, null);
 		}
 		else {
@@ -342,7 +345,6 @@ public class CommandHome extends CommandPlaceBase {
 			details[1] = playerLocation.getBlockX() + ", " + playerLocation.getBlockY() + ", " + playerLocation.getBlockZ();
 			details[2] = "in " + playerLocation.getWorld().getName();
 
-			final int LAST_SLOT = 8;
 			inventory.addMenuItem("New Home", item, details, LAST_SLOT, new NewHomeGuiCallback(m_module, player, this));
 		}
 		
@@ -385,7 +387,7 @@ public class CommandHome extends CommandPlaceBase {
             homes = new ArrayList<PlayerHome>();
         }
 
-        if (homes.size() >= 8) {
+        if (homes.size() >= this.getMaxHomes(player)) {
             Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-REACHED-MAX"));
             return;
         }
