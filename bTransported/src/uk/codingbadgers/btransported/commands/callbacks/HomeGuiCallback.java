@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package uk.codingbadgers.btransported.commands.home;
+package uk.codingbadgers.btransported.commands.callbacks;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,6 +18,7 @@ import uk.codingbadgers.bFundamentals.gui.callbacks.GuiReturnCallback;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
 import uk.codingbadgers.btransported.commands.CommandHome;
+import uk.codingbadgers.btransported.commands.home.PlayerHome;
 
 /**
  *

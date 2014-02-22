@@ -2,20 +2,25 @@ package uk.codingbadgers.btransported.commands;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+import org.bukkit.inventory.ItemStack;
 import uk.codingbadgers.bFundamentals.bFundamentals;
-import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
+import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
+import uk.codingbadgers.btransported.commands.callbacks.SpawnGuiCallback;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
@@ -26,7 +31,7 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
  * All based around permissions.
  * There is also the ability to teleport offline players to a world spawn
  */
-public class CommandSpawn extends ModuleCommand {
+public class CommandSpawn extends CommandPlaceBase {
 	
 	/** The bFundamentals module */
 	private final bTransported m_module;
@@ -39,7 +44,12 @@ public class CommandSpawn extends ModuleCommand {
 	 * @param module	The bFundamentals module
 	 */
 	public CommandSpawn(bTransported module) {
-		super("spawn", "spawn | spawn <world name> | spawn <player_name> | spawn <world_name> <player_name> | spawn set | spawn delete <world_name>");
+		super(
+			module, 
+			"BF-SPAWN_ANVIL", 
+			"spawn", 
+			"spawn | spawn <world name> | spawn <player name> | spawn <player name> <world name> | spawn set | spawn remove | spawn <world name> remove"
+		);
 		m_module = module;
 		
 		createDatabase();
@@ -77,106 +87,61 @@ public class CommandSpawn extends ModuleCommand {
 				return true;
 			}
 			
-			final String worldname = player.getWorld().getName();
-			final String tpMessage = m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldname);
-			
-			teleportPlayer(player, worldname, tpMessage);
+			handleSpawnGUI(player);
 			
 			return true;
 			
-		// Handle /spawn <world name> and /spawn <player name>
 		} else if (args.length == 1) {
 			
+			// Handle /spawn set
 			if (args[0].equalsIgnoreCase("set")) {
 				
-				final Location location = player.getLocation();
-				final String worldName = location.getWorld().getName();
-				
-				if (m_spawn.containsKey(worldName)) {
-					Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-WORLD-ALREADY-EXISTS").replace("%worldname%", worldName));					
-					return true;
-				}
-				
-				m_spawn.put(worldName, location);
-				addSpawnToDatabase(location);
-				
-				Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-ADDED").replace("%worldname%", worldName));
-				
+				handleSpawnSet(player);
 				return true;
 				
+			// Handle /spawn remove
+			} else if (args[0].equalsIgnoreCase("remove")) {
+				
+				handleSpawnRemove(player, player.getWorld().getName());
+				return true;
+				
+			// Handle /spawn help
 			} else if (args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help")) { 
 				
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-USAGE"));
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-ONE-PARAM-USAGE"));
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-TWO-PARAM-USAGE"));
-				
-			} else {
-			
-				final String name = args[0];
-							
-				World world = Bukkit.getWorld(name);
-				// teleport the player who said the command to the spawn of the given world	
-				if (world != null) {
-					if (!Module.hasPermission(player, "perks.btransported.spawn.world")) {
-						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.world"));
-						return true;
-					}
-					
-					final String worldname = world.getName();
-					final String tpMessage = m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldname);
-										
-					teleportPlayer(player, worldname, tpMessage);
-					
-					return true;
-				}
-				
-				OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(name);
-				// teleport the given player to the spawn of the command players world
-				if (tpPlayer.hasPlayedBefore()) {
-					if (!Module.hasPermission(player, "perks.btransported.spawn.other")) {
-						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.other"));
-						return true;
-					}
-					
-					final String worldname = player.getWorld().getName();
-					final String tpMessage = m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldname);
-										
-					if (teleportPlayer(tpPlayer, worldname, tpMessage)) {					
-						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE-OTHER").replace("%worldname%", worldname).replace("%playername%", tpPlayer.getName()));
-					} else {
-						Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-FAILED"));
-					}
-					
-					return true;
-				}
-				
-				// not a world or player
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-PLAYER-WORLD-NOT-FOUND").replace("%name%", name));
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-ONE-PARAM-USAGE"));
+				handleSpawnHelp(player);
+				return true;
+
 			}
 			
-			return true;
-			
-		// handle /spawn <worldname> <playername>
-		} else if (args.length == 2) {
-			
-			if (args[0].equalsIgnoreCase("delete")) {
-				
-				final String worldName = args[1];
-				
-				if (!m_spawn.containsKey(worldName)) {
-					Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-WORLD-DOESNT-EXIST").replace("%worldname%", worldName));					
-					return true;
-				}
-				
-				m_spawn.remove(worldName);
-				deleteSpawnFromDatabase(worldName);
-				
-				Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-DELETED").replace("%worldname%", worldName));
-				
+			// Handle /spawn <worldname>
+			final String name = args[0];
+			if (Bukkit.getWorld(name) != null) {
+				handleSpawnWorldName(player, player.getName(), name);
 				return true;
 			}
 
+			// Handle /spawn <playername>
+			OfflinePlayer tpPlayer = Bukkit.getOfflinePlayer(name);
+			// teleport the given player to the spawn of the command players world
+			if (tpPlayer.hasPlayedBefore()) {
+				handleSpawnWorldName(player, tpPlayer.getName(), player.getWorld().getName());
+				return true;
+			}
+
+			// not a world or player
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-PLAYER-WORLD-NOT-FOUND").replace("%name%", name));
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-ONE-PARAM-USAGE"));
+			return true;
+
+		} else if (args.length == 2) {
+			
+			// Handle /spawn <world name> remove
+			if (args[1].equalsIgnoreCase("remove")) {
+				handleSpawnRemove(player, args[0]);
+				return true;
+			}
+
+			// Handle /spawn <player name> <world name>
 			if (!Module.hasPermission(player, "perks.btransported.spawn.other.world")) {
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.other.world"));
 				return true;
@@ -204,6 +169,115 @@ public class CommandSpawn extends ModuleCommand {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Handle /spawn <worldname> and /spawn <playername> <worldname>
+	 * @param player
+	 * @param playername
+	 * @param worldname 
+	 */
+	private void handleSpawnWorldName(Player player, String playername, String worldname) {
+		
+		if (!Module.hasPermission(player, "perks.btransported.spawn." + worldname)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn." + worldname));
+			return;
+		}
+		
+		// teleporting a different player
+		if (!player.getName().equalsIgnoreCase(playername)) {
+			if (!Module.hasPermission(player, "perks.btransported.spawn.other")) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.other"));
+				return;
+			}
+		}
+
+		final String tpMessage = m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", worldname);
+		teleportPlayer(player, worldname, tpMessage);
+	}
+	
+	/**
+	 * Handle the spawn help
+	 * @param player The player requesting help
+	 */
+	private void handleSpawnHelp(Player player) {
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-USAGE"));
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-ONE-PARAM-USAGE"));
+		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-TWO-PARAM-USAGE"));
+	}
+	
+	/**
+	 * Handle the /spawn remove [worldname] command
+	 * @param player The player executing the command
+	 * @param worldname The world name to remove
+	 */
+	private void handleSpawnRemove(Player player, String worldname) {
+
+		if (!Module.hasPermission(player, "perks.btransported.spawn.remove")) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.remove"));
+			return;
+		}
+		
+		if (!m_spawn.containsKey(worldname)) {
+			Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-WORLD-DOESNT-EXIST").replace("%worldname%", worldname));					
+			return;
+		}
+
+		m_spawn.remove(worldname);
+		deleteSpawnFromDatabase(worldname);
+
+		Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-DELETED").replace("%worldname%", worldname));
+	}
+	
+	/**
+	 * Set the players current world spawn to the players location
+	 * @param player The player using the command
+	 */
+	private void handleSpawnSet(Player player) {
+		
+		if (!Module.hasPermission(player, "perks.btransported.spawn.set")) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.set"));
+			return;
+		}
+		
+		final Location location = player.getLocation();
+		final String worldName = location.getWorld().getName();
+
+		if (m_spawn.containsKey(worldName)) {
+			m_spawn.remove(worldName);
+			deleteSpawnFromDatabase(worldName);
+		}
+
+		m_spawn.put(worldName, location);
+		addSpawnToDatabase(location);
+
+		Module.sendMessage("bTransported", player.getPlayer(), m_module.getLanguageValue("COMMAND-SPAWN-ADDED").replace("%worldname%", worldName));
+	}
+	
+	/**
+	 * Show the spawn gui
+	 * @param player The player to show it to
+	 */
+	private void handleSpawnGUI(Player player) {
+		
+		final int noofSpawns = this.m_spawn.size();
+		final int ROW_COUNT = (int) Math.ceil(noofSpawns / 9.0f);
+
+        GuiInventory inventory = new GuiInventory(bFundamentals.getInstance());
+        inventory.createInventory("Spawn Selection", ROW_COUNT);
+
+        for (Entry<String, Location> entry : m_spawn.entrySet()) {
+			if (!Module.hasPermission(player, "perks.btransported.spawn." + entry.getKey())) {
+				continue;
+			}
+			
+			ItemStack item = new ItemStack(Material.COMPASS);
+			String[] details = new String[1];
+			details[0] = entry.getValue().getBlockX() + ", " + entry.getValue().getBlockY() + ", " + entry.getValue().getBlockZ();
+			inventory.addMenuItem(entry.getKey(), item, details, new SpawnGuiCallback(m_module, player, entry));
+		}
+		
+        inventory.open(player);
 	}
 	
 	/**
@@ -343,5 +417,85 @@ public class CommandSpawn extends ModuleCommand {
 			db.freeResult(result);
 		}
 	}
+
+	@Override
+	protected void onAnvilNameComplete(Player player, Location location, String name) {
+		// unused
+	}
 	
+	/**
+     * Handle tab completion
+     * @return A list of matches
+     */
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+
+        List<String> matches = new ArrayList<String>();
+        if (args.length == 0)
+            return matches;
+		
+		if (args.length == 1) {
+			// spawn <world name>
+			// spawn <player_name> 
+			// spawn set
+			// spawn remove
+			
+			final String worldLookup = args[args.length - 1];
+			
+			if (("set").startsWith(worldLookup) || ("set").equalsIgnoreCase(worldLookup)) {
+				matches.add("set");
+			}
+			
+			if (("remove").startsWith(worldLookup) || ("remove").equalsIgnoreCase(worldLookup)) {
+				matches.add("remove");
+			}
+
+			// world names
+			for (Entry<String, Location> entry : m_spawn.entrySet()) {
+				if (Module.hasPermission((Player)sender, "perks.btransported.spawn." + entry.getKey())) {
+					if (entry.getKey().startsWith(worldLookup)) {
+						matches.add(entry.getKey());
+						continue;
+					}
+					
+					if (entry.getKey().equalsIgnoreCase(worldLookup)) {
+						matches.add(entry.getKey());
+						continue;
+					}
+				}
+			}
+			
+			// player names
+			List<OfflinePlayer> players = m_module.matchPlayer(args[0], false);
+			for (OfflinePlayer other : players) {
+				matches.add(other.getName());
+			}
+		}
+		else if (args.length == 2) {
+			// spawn <player_name> <world_name>
+			// spawn <world_name> 
+			
+			final String worldLookup = args[args.length - 1];
+			if (("remove").startsWith(worldLookup) || ("remove").equalsIgnoreCase(worldLookup)) {
+				matches.add("remove");
+			}
+			
+			// world names
+			for (Entry<String, Location> entry : m_spawn.entrySet()) {
+				if (Module.hasPermission((Player)sender, "perks.btransported.spawn." + entry.getKey())) {
+					if (entry.getKey().startsWith(worldLookup)) {
+						matches.add(entry.getKey());
+						continue;
+					}
+					
+					if (entry.getKey().equalsIgnoreCase(worldLookup)) {
+						matches.add(entry.getKey());
+						continue;
+					}
+				}
+			}
+		}
+		
+		return matches;
+	}
 }

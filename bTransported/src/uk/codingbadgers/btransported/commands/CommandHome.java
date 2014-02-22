@@ -23,8 +23,8 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
-import uk.codingbadgers.btransported.commands.home.HomeGuiCallback;
-import uk.codingbadgers.btransported.commands.home.NewHomeGuiCallback;
+import uk.codingbadgers.btransported.commands.callbacks.HomeGuiCallback;
+import uk.codingbadgers.btransported.commands.callbacks.NewHomeGuiCallback;
 import uk.codingbadgers.btransported.commands.home.PlayerHome;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package uk.codingbadgers.btransported.commands.home;
+package uk.codingbadgers.btransported.commands.callbacks;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
