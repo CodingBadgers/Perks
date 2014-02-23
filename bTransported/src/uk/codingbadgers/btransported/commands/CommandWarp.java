@@ -20,6 +20,8 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
+import uk.codingbadgers.btransported.commands.callbacks.NewWarpGuiCallback;
+import uk.codingbadgers.btransported.commands.callbacks.WarpGuiCallback;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
@@ -215,6 +217,8 @@ public class CommandWarp extends CommandPlaceBase {
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.create"));
 			return;
 		}
+		
+		warpname = formatName(warpname);
 
 		if (warpname.equalsIgnoreCase("list") || warpname.equalsIgnoreCase("help") || warpname.equalsIgnoreCase("?")) {
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NAME-RESERVED"));
@@ -280,7 +284,7 @@ public class CommandWarp extends CommandPlaceBase {
 			String[] details = new String[2];
 			details[0] = warp.getValue().getBlockX() + ", " + warp.getValue().getBlockY() + ", " + warp.getValue().getBlockZ();
 			details[1] = warp.getValue().getWorld().getName();
-			inventory.addMenuItem(warp.getKey(), item, details, null);
+			inventory.addMenuItem(warp.getKey(), item, details, new WarpGuiCallback(player, warp.getKey(), this));
 		}
 		
 		if (Module.hasPermission(player, "btransported.warp.set")) {
@@ -294,16 +298,20 @@ public class CommandWarp extends CommandPlaceBase {
 			details[1] = playerLocation.getBlockX() + ", " + playerLocation.getBlockY() + ", " + playerLocation.getBlockZ();
 			details[2] = "in " + playerLocation.getWorld().getName();
 
-			inventory.addMenuItem("New Warp", item, details, LAST_SLOT, null);
+			inventory.addMenuItem("New Warp", item, details, LAST_SLOT, new NewWarpGuiCallback(player, this));
 		}
 		
         inventory.open(player);
 		
 	}
 	
-	private boolean warpPlayer(final Player player, String warpName) {
-		
-		warpName = warpName.toLowerCase();
+	/**
+	 * 
+	 * @param player
+	 * @param warpName
+	 * @return 
+	 */
+	public boolean warpPlayer(final Player player, String warpName) {
 		
 		if (!Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
 			if (!warpName.equalsIgnoreCase(player.getName())) {
@@ -408,37 +416,14 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		
-		Player player = null;
-		if (sender instanceof Player) {
-			player = (Player)sender;
-		}
-		
+
 		List<String> matches = new ArrayList<String>();
-		if (args.length == 0) {
-			for (String warpName : m_warp.keySet()) {
-				if (player == null || Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
-					matches.add(warpName);
-				}
-			}
-			return matches;
-		}
-		
-		String name = args[args.length - 1];
-		for (String warpName : m_warp.keySet()) {
-			if (warpName.toLowerCase().startsWith(name.toLowerCase())) {
-				if (player == null || Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
-					matches.add(warpName);
-				}
-			}
-		}
-		
 		return matches;
 		
 	}
 
 	@Override
 	protected void onAnvilNameComplete(Player player, Location location, String name) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		handleWarpCreate(player, name);
 	}
 }

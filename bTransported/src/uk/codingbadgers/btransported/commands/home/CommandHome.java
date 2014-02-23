@@ -464,31 +464,10 @@ public class CommandHome extends CommandPlaceBase {
 			details[1] = playerLocation.getBlockX() + ", " + playerLocation.getBlockY() + ", " + playerLocation.getBlockZ();
 			details[2] = "in " + playerLocation.getWorld().getName();
 
-			inventory.addMenuItem("New Home", item, details, LAST_SLOT, new NewHomeGuiCallback(m_module, player, this));
+			inventory.addMenuItem("New Home", item, details, LAST_SLOT, new NewHomeGuiCallback(player, this));
 		}
 		
         inventory.open(player);
-    }
-
-    /**
-     * Format a home name into a non spaced camel case name
-     * @param name The name to format
-     * @return The formated version of the name
-     */
-    private String formatHomeName(String name) {
-        
-        name = name.toLowerCase();
-        String[] nameParts = name.split(" ");
-        String formattedName = "";
-        for (String part : nameParts) {
-            String camelPart = part.substring(0, 1).toUpperCase();
-            if (part.length() > 1) {
-                camelPart += part.substring(1);
-            }
-            formattedName += camelPart;
-        }      
-        
-        return formattedName;
     }
     
     /**
@@ -511,7 +490,7 @@ public class CommandHome extends CommandPlaceBase {
             return;
         }
 
-        PlayerHome home = new PlayerHome(formatHomeName(name), player.getName(), location);
+        PlayerHome home = new PlayerHome(formatName(name), player.getName(), location);
         homes.add(home);
 
         m_homes.put(player.getName(), homes);

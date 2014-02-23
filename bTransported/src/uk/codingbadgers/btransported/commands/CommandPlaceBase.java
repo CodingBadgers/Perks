@@ -96,12 +96,12 @@ public abstract class CommandPlaceBase extends ModuleCommand implements Listener
     }
     
     /**
-     * Handle click events within inventory's
+     * Handle close events within inventory's
      *
-     * @param event The click event
+     * @param event The close event
      */
     @EventHandler
-    public void onInventoryClick(InventoryCloseEvent event) {
+    public void onInventoryClose(InventoryCloseEvent event) {
         
         Inventory invent = event.getInventory();
         if (invent.getType() != InventoryType.ANVIL) {
@@ -152,6 +152,27 @@ public abstract class CommandPlaceBase extends ModuleCommand implements Listener
         ePlayer.activeContainer.checkReachable = false;
 
         return true;
+    }
+	
+	/**
+     * Format a name into a non spaced camel case name
+     * @param name The name to format
+     * @return The formated version of the name
+     */
+    protected String formatName(String name) {
+        
+        name = name.toLowerCase();
+        String[] nameParts = name.split(" ");
+        String formattedName = "";
+        for (String part : nameParts) {
+            String camelPart = part.substring(0, 1).toUpperCase();
+            if (part.length() > 1) {
+                camelPart += part.substring(1);
+            }
+            formattedName += camelPart;
+        }      
+        
+        return formattedName;
     }
 
 	/**

@@ -13,26 +13,25 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import uk.codingbadgers.bFundamentals.gui.GuiCallback;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
-import uk.codingbadgers.btransported.commands.home.CommandHome;
+import uk.codingbadgers.btransported.commands.CommandWarp;
 
 /**
  *
- * @author N3wton
+ * @author Sam
  */
-public class NewHomeGuiCallback implements GuiCallback {
-
+public class NewWarpGuiCallback implements GuiCallback {
+   
     private final Player m_player;
-    private final CommandHome m_homeCommand;
+    private final CommandWarp m_warpCommand;
     
     /**
      *
-     * @param module
      * @param player
-     * @param homeCommand
+     * @param warpCommand
      */
-    public NewHomeGuiCallback(Player player, CommandHome homeCommand) {
+    public NewWarpGuiCallback(Player player, CommandWarp warpCommand) {
         m_player = player;
-        m_homeCommand = homeCommand;
+        m_warpCommand = warpCommand;
     }
 
     @Override
@@ -42,12 +41,12 @@ public class NewHomeGuiCallback implements GuiCallback {
         inventory.close(m_player);
         
         // open an anvil gui for the name          
-        ItemStack dummyBook = new ItemStack(Material.BOOK_AND_QUILL);
-        ItemMeta meta = dummyBook.getItemMeta();
-        meta.setDisplayName("Enter Home Name...");
-        dummyBook.setItemMeta(meta);
+        ItemStack dummyEye = new ItemStack(Material.EYE_OF_ENDER);
+        ItemMeta meta = dummyEye.getItemMeta();
+        meta.setDisplayName("Enter Warp Name...");
+        dummyEye.setItemMeta(meta);
         
 		// Open an anvil inventory
-        m_homeCommand.openAnvilInventory(m_player, dummyBook);
+        m_warpCommand.openAnvilInventory(m_player, dummyEye);
     }    
 }
