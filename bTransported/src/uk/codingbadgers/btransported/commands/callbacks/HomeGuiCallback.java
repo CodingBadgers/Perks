@@ -17,7 +17,7 @@ import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.bFundamentals.gui.callbacks.GuiReturnCallback;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
-import uk.codingbadgers.btransported.commands.CommandHome;
+import uk.codingbadgers.btransported.commands.home.CommandHome;
 import uk.codingbadgers.btransported.commands.home.PlayerHome;
 
 /**

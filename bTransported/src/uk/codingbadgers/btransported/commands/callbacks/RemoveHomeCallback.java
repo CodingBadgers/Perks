@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import uk.codingbadgers.bFundamentals.gui.GuiCallback;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
-import uk.codingbadgers.btransported.commands.CommandHome;
+import uk.codingbadgers.btransported.commands.home.CommandHome;
 import uk.codingbadgers.btransported.commands.home.PlayerHome;
 
 /**

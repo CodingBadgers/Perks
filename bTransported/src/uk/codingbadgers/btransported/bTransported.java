@@ -20,9 +20,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.btransported.commands.CommandHome;
 import uk.codingbadgers.btransported.commands.CommandSpawn;
 import uk.codingbadgers.btransported.commands.CommandWarp;
+import uk.codingbadgers.btransported.commands.home.CommandHome;
 import uk.codingbadgers.btransported.commands.tp.CommandTP;
 import uk.codingbadgers.btransported.commands.tp.CommandTPA;
 import uk.codingbadgers.btransported.commands.tp.CommandTPHR;
@@ -243,13 +243,13 @@ public class bTransported extends Module {
 	 * @return True on success false otherwise
 	 */	
 	public boolean teleportOfflinePlayer(OfflinePlayer player, Location location) {
-            
-                if (player.isOnline()) {
-                    Player onlinePlayer = (Player) player;
-                    onlinePlayer.teleport(location);
-                    return true;
-                }
-	
+
+		if (player.isOnline()) {
+			Player onlinePlayer = (Player) player;
+			onlinePlayer.teleport(location);
+			return true;
+		}
+
 		// Get the player dat of the player we want to modify
 		final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".dat";
 		File tpPlayerDat = new File(tpPlayerDatPath);

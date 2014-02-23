@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import uk.codingbadgers.bFundamentals.gui.GuiCallback;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.btransported.bTransported;
-import uk.codingbadgers.btransported.commands.CommandHome;
+import uk.codingbadgers.btransported.commands.home.CommandHome;
 
 /**
  *
