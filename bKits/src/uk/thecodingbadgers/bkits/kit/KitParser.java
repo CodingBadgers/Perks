@@ -33,6 +33,7 @@ public class KitParser {
 	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
+	@SuppressWarnings("deprecation")
 	public void parseKits() throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(config));
 
