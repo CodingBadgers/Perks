@@ -22,6 +22,7 @@ import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
 import uk.codingbadgers.btransported.commands.callbacks.NewWarpGuiCallback;
 import uk.codingbadgers.btransported.commands.callbacks.WarpGuiCallback;
+import uk.codingbadgers.btransported.permissions.WarpPermission;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
@@ -30,8 +31,14 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
  */
 public class CommandWarp extends CommandPlaceBase {
 
+	/**
+	 * The main module
+	 */
 	private bTransported m_module = null;
 	
+	/**
+	 * Hashmap of warp locations
+	 */
 	private HashMap<String, Location> m_warp = new HashMap<String, Location>();
 
     /**
@@ -60,8 +67,8 @@ public class CommandWarp extends CommandPlaceBase {
 		
 		Player player = (Player)sender;
 		
-		if (!Module.hasPermission(player, "perks.btransported.warp")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp"));
+		if (!Module.hasPermission(player, WarpPermission.Warp.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", WarpPermission.Warp.permission));
 			return true;
 		}
 		
@@ -143,8 +150,8 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	private void handleWarpOtherPlayer(Player player, String warpname, String playername) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.warp.other")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.other"));
+		if (!Module.hasPermission(player, WarpPermission.WarpOther.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", WarpPermission.WarpOther.permission));
 			return;
 		}
 
@@ -170,8 +177,8 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	private void handleWarpAll(Player player, String warpname) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.warp.all")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.all"));
+		if (!Module.hasPermission(player, WarpPermission.All.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", WarpPermission.All.permission));
 			return;
 		}
 
@@ -191,8 +198,8 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	private void handleWarpRemove(Player player, String warpname) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.warp.remove")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.remove"));
+		if (!Module.hasPermission(player, WarpPermission.Remove.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", WarpPermission.Remove.permission));
 			return;
 		}
 		
@@ -213,8 +220,8 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	private void handleWarpCreate(Player player, String warpname) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.warp.create")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.create"));
+		if (!Module.hasPermission(player, WarpPermission.Create.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", WarpPermission.Create.permission));
 			return;
 		}
 		
@@ -242,8 +249,8 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	private void handleWarpList(Player player) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.warp.list")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp.list"));
+		if (!Module.hasPermission(player, WarpPermission.List.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", WarpPermission.List.permission));
 			return;
 		}
 
@@ -251,7 +258,7 @@ public class CommandWarp extends CommandPlaceBase {
 		for (Entry<String, Location> entry : m_warp.entrySet()) {
 			final String name = entry.getKey();
 			final Location location = entry.getValue();				
-			if (Module.hasPermission(player, "perks.btransported.warp." + name)) {
+			if (Module.hasPermission(player, WarpPermission.Warp.permission + "." + name)) {
 				Module.sendMessage("bTransported", player, " - " + ChatColor.GOLD + name + ChatColor.WHITE + " at " + (int)location.getX() + ", " + (int)location.getY() + ", " + (int)location.getZ() + " in " + location.getWorld().getName());
 			}
 		}
@@ -264,7 +271,7 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	private void handleWarpGUI(Player player) {
 		
-		if (!Module.hasPermission(player, "btransported.warp")) {
+		if (!Module.hasPermission(player, WarpPermission.Gui.permission)) {
 			Module.sendMessage("Warp", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION"));
 			return;
 		}
@@ -280,6 +287,10 @@ public class CommandWarp extends CommandPlaceBase {
 
         // Show the warps
         for (Entry<String, Location> warp : m_warp.entrySet()) {
+			if (!Module.hasPermission(player, WarpPermission.Warp.permission + "." + warp.getKey())) {
+				continue;
+			}
+			
 			ItemStack item = new ItemStack(Material.EYE_OF_ENDER);
 			String[] details = new String[2];
 			details[0] = warp.getValue().getBlockX() + ", " + warp.getValue().getBlockY() + ", " + warp.getValue().getBlockZ();
@@ -287,7 +298,7 @@ public class CommandWarp extends CommandPlaceBase {
 			inventory.addMenuItem(warp.getKey(), item, details, new WarpGuiCallback(player, warp.getKey(), this));
 		}
 		
-		if (Module.hasPermission(player, "btransported.warp.set")) {
+		if (Module.hasPermission(player, WarpPermission.Create.permission)) {
 			// Show the create warp item
 			Location playerLocation = player.getLocation();
 
@@ -313,7 +324,7 @@ public class CommandWarp extends CommandPlaceBase {
 	 */
 	public boolean warpPlayer(final Player player, String warpName) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.warp." + warpName)) {
+		if (!Module.hasPermission(player, WarpPermission.Warp.permission + "." + warpName)) {
 			if (!warpName.equalsIgnoreCase(player.getName())) {
 				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NO-PERMISSION").replace("%permission%", "perks.btransported.warp." + warpName));
 				return true;

@@ -26,6 +26,7 @@ import uk.codingbadgers.btransported.bTransported;
 import uk.codingbadgers.btransported.commands.CommandPlaceBase;
 import uk.codingbadgers.btransported.commands.callbacks.HomeGuiCallback;
 import uk.codingbadgers.btransported.commands.callbacks.NewHomeGuiCallback;
+import uk.codingbadgers.btransported.permissions.HomePermission;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
@@ -245,17 +246,12 @@ public class CommandHome extends CommandPlaceBase {
         // Cast the sender to a player
         final Player player = (Player) sender;
 
-        // Make sure the sending player has the spawn permission
-        if (!Module.hasPermission(player, "perks.btransported.home")) {
-            Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-HOME-NO-PERMISSION").replace("%permission%", "perks.btransported.home"));
-            return true;
-        }
-
         if (args.length == 0) {
 
             // handle /home			
             handleHomeGUI(player);
             return true;
+			
         }
         else if (args.length == 1) {
             
@@ -271,7 +267,7 @@ public class CommandHome extends CommandPlaceBase {
 			// handle /home <home name> set
             if (command.equalsIgnoreCase("set")) {
 				
-				if (!Module.hasPermission(player, "btransported.home")) {
+				if (!Module.hasPermission(player, HomePermission.Set.permission)) {
 					Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-NO-PERMISSION"));
 					return true;
 				}
@@ -319,7 +315,7 @@ public class CommandHome extends CommandPlaceBase {
 		
 		// If the sender is not the owner of the home check they have perms
 		if (!sender.getName().equalsIgnoreCase(playerName)) {
-			if (!Module.hasPermission(sender, "btransported.home.other.remove")) {
+			if (!Module.hasPermission(sender, HomePermission.RemoveOther.permission)) {
 				Module.sendMessage("Home", sender, m_module.getLanguageValue("COMMAND-HOME-NO-PERMISSION"));
 				return true;
 			}
@@ -352,7 +348,7 @@ public class CommandHome extends CommandPlaceBase {
         
 		// If the sender is not the owner of the home check they have perms
 		if (!player.getName().equalsIgnoreCase(playerName)) {
-			if (!Module.hasPermission(player, "btransported.home.other")) {
+			if (!Module.hasPermission(player, HomePermission.HomeOther.permission)) {
 				Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-NO-PERMISSION"));
 				return true;
 			}
@@ -380,6 +376,11 @@ public class CommandHome extends CommandPlaceBase {
 	 * @return 
 	 */
     private boolean handleHomeName(Player player, String homeName) {
+		
+		if (!Module.hasPermission(player, HomePermission.Home.permission)) {
+			Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-NO-PERMISSION"));
+			return true;
+		}
         
         PlayerHome home = getHomeFromName(player.getName(), homeName);
         if (home == null) {
@@ -418,7 +419,7 @@ public class CommandHome extends CommandPlaceBase {
 	 */
     public void handleHomeGUI(Player player) {
 		
-		if (!Module.hasPermission(player, "btransported.home")) {
+		if (!Module.hasPermission(player, HomePermission.Gui.permission)) {
 			Module.sendMessage("Home", player, m_module.getLanguageValue("COMMAND-HOME-NO-PERMISSION"));
 			return;
 		}
@@ -587,10 +588,10 @@ public class CommandHome extends CommandPlaceBase {
 		return m_homes.get(player.getName()).size();
 	}
 	
-	@Override
 	/**
 	 * Called when an anvil naming gui is completed
 	 */
+	@Override
 	protected void onAnvilNameComplete(Player player, Location location, String name) {
 		addNewHome(player, location, name);
 	}

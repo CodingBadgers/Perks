@@ -21,6 +21,7 @@ import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.btransported.bTransported;
 import uk.codingbadgers.btransported.commands.callbacks.SpawnGuiCallback;
+import uk.codingbadgers.btransported.permissions.SpawnPermission;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
@@ -72,18 +73,12 @@ public class CommandSpawn extends CommandPlaceBase {
 		
 		// Cast the sender to a player
 		final Player player = (Player)sender;
-		
-		// Make sure the sending player has the spawn permission
-		if (!Module.hasPermission(player, "perks.btransported.spawn")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn"));
-			return true;
-		}
 				
 		// Handle /spawn
 		if (args.length == 0) {
 		
-			if (!Module.hasPermission(player, "perks.btransported.spawn")) {
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn"));
+			if (!Module.hasPermission(player, SpawnPermission.Gui.permission)) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", SpawnPermission.Gui.permission));
 				return true;
 			}
 			
@@ -142,8 +137,8 @@ public class CommandSpawn extends CommandPlaceBase {
 			}
 
 			// Handle /spawn <player name> <world name>
-			if (!Module.hasPermission(player, "perks.btransported.spawn.other.world")) {
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.other.world"));
+			if (!Module.hasPermission(player, SpawnPermission.OtherWorld.permission)) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", SpawnPermission.OtherWorld.permission));
 				return true;
 			}
 			
@@ -179,15 +174,15 @@ public class CommandSpawn extends CommandPlaceBase {
 	 */
 	private void handleSpawnWorldName(Player player, String playername, String worldname) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.spawn." + worldname)) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn." + worldname));
+		if (!Module.hasPermission(player, SpawnPermission.Spawn.permission + "." + worldname)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", SpawnPermission.Spawn.permission + "." + worldname));
 			return;
 		}
 		
 		// teleporting a different player
 		if (!player.getName().equalsIgnoreCase(playername)) {
-			if (!Module.hasPermission(player, "perks.btransported.spawn.other")) {
-				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.other"));
+			if (!Module.hasPermission(player, SpawnPermission.Other.permission)) {
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", SpawnPermission.Other.permission));
 				return;
 			}
 		}
@@ -213,8 +208,8 @@ public class CommandSpawn extends CommandPlaceBase {
 	 */
 	private void handleSpawnRemove(Player player, String worldname) {
 
-		if (!Module.hasPermission(player, "perks.btransported.spawn.remove")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.remove"));
+		if (!Module.hasPermission(player, SpawnPermission.Remove.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", SpawnPermission.Remove.permission));
 			return;
 		}
 		
@@ -235,8 +230,8 @@ public class CommandSpawn extends CommandPlaceBase {
 	 */
 	private void handleSpawnSet(Player player) {
 		
-		if (!Module.hasPermission(player, "perks.btransported.spawn.set")) {
-			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", "perks.btransported.spawn.set"));
+		if (!Module.hasPermission(player, SpawnPermission.Set.permission)) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-SPAWN-NO-PERMISSION").replace("%permission%", SpawnPermission.Set.permission));
 			return;
 		}
 		
@@ -267,7 +262,7 @@ public class CommandSpawn extends CommandPlaceBase {
         inventory.createInventory("Spawn Selection", ROW_COUNT);
 
         for (Entry<String, Location> entry : m_spawn.entrySet()) {
-			if (!Module.hasPermission(player, "perks.btransported.spawn." + entry.getKey())) {
+			if (!Module.hasPermission(player, SpawnPermission.Spawn.permission + "." + entry.getKey())) {
 				continue;
 			}
 			
@@ -452,7 +447,7 @@ public class CommandSpawn extends CommandPlaceBase {
 
 			// world names
 			for (Entry<String, Location> entry : m_spawn.entrySet()) {
-				if (Module.hasPermission((Player)sender, "perks.btransported.spawn." + entry.getKey())) {
+				if (Module.hasPermission((Player)sender, SpawnPermission.Spawn.permission + "." + entry.getKey())) {
 					if (entry.getKey().startsWith(worldLookup)) {
 						matches.add(entry.getKey());
 						continue;
@@ -482,7 +477,7 @@ public class CommandSpawn extends CommandPlaceBase {
 			
 			// world names
 			for (Entry<String, Location> entry : m_spawn.entrySet()) {
-				if (Module.hasPermission((Player)sender, "perks.btransported.spawn." + entry.getKey())) {
+				if (Module.hasPermission((Player)sender, SpawnPermission.Spawn.permission + "." + entry.getKey())) {
 					if (entry.getKey().startsWith(worldLookup)) {
 						matches.add(entry.getKey());
 						continue;
