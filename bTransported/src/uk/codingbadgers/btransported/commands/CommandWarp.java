@@ -40,6 +40,11 @@ public class CommandWarp extends CommandPlaceBase {
 	 * Hashmap of warp locations
 	 */
 	private HashMap<String, Location> m_warp = new HashMap<String, Location>();
+	
+	/**
+	 * Hash map of warp name and icon
+	 */
+	private HashMap<String, Material> m_warpIcon = new HashMap<String, Material>();
 
     /**
      *
@@ -50,7 +55,7 @@ public class CommandWarp extends CommandPlaceBase {
 			module, 
 			"BF-WARP-ANVIL", 
 			"warp", 
-			"warp <name> | warp list | warp help | warp <name> <playername> | warp <name> all | warp <name> create | warp <name> remove"
+			"warp <name> | warp list | warp help | warp <name> <playername> | warp <name> all | warp <name> create | warp <name> remove | warp <name> seticon <material>"
 		);
 		m_module = module;
 		
@@ -131,6 +136,39 @@ public class CommandWarp extends CommandPlaceBase {
 				return true;
 			}
 			
+		}
+		else if (args.length == 3) {
+			
+			final String command = args[1];
+			
+			// warp <name> seticon <material>
+			if (command.equalsIgnoreCase("seticon")) {
+				final String name = args[0];
+				
+				Material icon = null;
+				try {
+					icon = Material.valueOf(name);
+				}
+				catch(Exception ex) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-SETICON-INVALID-MATERIAL"));
+					return true;
+				}
+				
+				if (icon == null) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-SETICON-INVALID-MATERIAL"));
+					return true;
+				}
+				
+				if (!m_warp.containsKey(name)) {
+					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NOT-FOUND"));
+					return true;
+				}
+				
+				Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-ICON-SET"));
+				m_warpIcon.put(name, icon);
+				updateWarpIcon(name, icon);
+				return true;
+			}
 		}
 		
 		// entered the wrong number of parameters...
@@ -239,7 +277,7 @@ public class CommandWarp extends CommandPlaceBase {
 
 		final Location location = player.getLocation();
 		m_warp.put(warpname, location);
-		addWarpToDatabase(warpname, location);
+		addWarpToDatabase(warpname, location, Material.EYE_OF_ENDER);
 		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-CREATED").replace("%warpname%", warpname));
 	}
 	
@@ -292,6 +330,10 @@ public class CommandWarp extends CommandPlaceBase {
 			}
 			
 			ItemStack item = new ItemStack(Material.EYE_OF_ENDER);
+			if (m_warpIcon.containsKey(warp.getKey())) {
+				item = new ItemStack(m_warpIcon.get(warp.getKey()));
+			}
+			
 			String[] details = new String[2];
 			details[0] = warp.getValue().getBlockX() + ", " + warp.getValue().getBlockY() + ", " + warp.getValue().getBlockZ();
 			details[1] = warp.getValue().getWorld().getName();
@@ -344,7 +386,7 @@ public class CommandWarp extends CommandPlaceBase {
 		return true;
 	}
 	
-	private void addWarpToDatabase(final String warpName, final Location location) {
+	private void addWarpToDatabase(final String warpName, final Location location, final Material icon) {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
 		
 		String query = "INSERT INTO `perks_warps` " +
@@ -355,10 +397,23 @@ public class CommandWarp extends CommandPlaceBase {
 				"'" + location.getY() + "'," +
 				"'" + location.getZ() + "'," +
 				"'" + location.getYaw() + "'," +
-				"'" + location.getPitch() + 
+				"'" + location.getPitch() + "'," +
+				"'" + icon.name() +
 				"');";
 		
 		db.query(query);
+	}
+	
+	private void updateWarpIcon(final String warpName, final Material icon) {
+	
+		BukkitDatabase db = bFundamentals.getBukkitDatabase();
+		
+		String query = "UPDATE `perks_warps` " +
+				"SET icon='" + icon.name() + "' " +
+				"WHERE name='" + warpName +
+				"');";
+		
+		db.query(query);		
 	}
 	
 	private void deleteWarpFromDatabase(final String warpName) {
@@ -380,7 +435,8 @@ public class CommandWarp extends CommandPlaceBase {
 					"y INT," +
 					"z INT," +
 					"yaw INT," +
-					"pitch INT" +
+					"pitch INT," +
+					"icon VARCHAR(64)" +
 					");";
 			
 			db.query(query, true);
@@ -406,11 +462,13 @@ public class CommandWarp extends CommandPlaceBase {
 		            int z = result.getInt("z");
 		            int pitch = result.getInt("pitch");
 		            int yaw = result.getInt("yaw");
+					Material icon = Material.valueOf(result.getString("icon"));
 		            
 		            World world = Bukkit.getServer().getWorld(worldName);
 		            Location location = new Location(world, x, y, z, yaw, pitch);
 		                        
-		            m_warp.put(warpName, location);		            
+		            m_warp.put(warpName, location);		
+					m_warpIcon.put(warpName, icon);
 		        }
 			} catch (SQLException e) {
 				e.printStackTrace();
