@@ -6,8 +6,8 @@ import net.minecraft.server.v1_7_R1.ContainerAnvilInventory;
 import net.minecraft.server.v1_7_R1.EntityPlayer;
 import net.minecraft.server.v1_7_R1.PacketPlayOutOpenWindow;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R1.entity.CraftHumanEntity;
@@ -15,7 +15,7 @@ import org.bukkit.craftbukkit.v1_7_R1.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -43,8 +43,6 @@ public class CommandAnvil extends ModuleCommand {
 			return true;
 		}
 		
-		player.openInventory(Bukkit.createInventory(player, InventoryType.ANVIL));
-		
 		openAnvil(player);
 		outputMessage(player, bInvested.getInstance().getLanguageValue("anvil-open"));
 		return true;
@@ -63,6 +61,7 @@ public class CommandAnvil extends ModuleCommand {
         ContainerAnvil anvilContainer = new ContainerAnvil(ePlayer.inventory, ePlayer.world, 0, 0, 0, ePlayer);
         if (player.getItemInHand() != null) {
             anvilContainer.setItem(0, CraftItemStack.asNMSCopy(player.getItemInHand()));
+            player.setItemInHand(new ItemStack(Material.AIR));
         }
         
         // Rename the inventory
@@ -82,7 +81,6 @@ public class CommandAnvil extends ModuleCommand {
         ePlayer.activeContainer.windowId = containerCounter;
         ePlayer.activeContainer.addSlotListener(ePlayer);
         ePlayer.activeContainer.checkReachable = false;
-
 	}
 
 }
