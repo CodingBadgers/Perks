@@ -23,6 +23,7 @@ public class bInvested extends Module {
 		registerCommand(new CommandFly());
 		registerCommand(new CommandCraft());
 		registerCommand(new CommandEnder());
+		registerCommand(new CommandAnvil());
 		
 		register(new FlyListener(m_database));
 		register(new ScubaListener());
