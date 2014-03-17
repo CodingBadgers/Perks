@@ -150,8 +150,11 @@ public class CommandWarp extends CommandPlaceBase {
 					icon = Material.valueOf(name);
 				}
 				catch(Exception ex) {
-					Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-SETICON-INVALID-MATERIAL"));
-					return true;
+					icon = null;
+				}
+				
+				if (icon == null) {
+					icon = Material.getMaterial(name);
 				}
 				
 				if (icon == null) {
@@ -390,7 +393,7 @@ public class CommandWarp extends CommandPlaceBase {
 		BukkitDatabase db = bFundamentals.getBukkitDatabase();
 		
 		String query = "INSERT INTO `perks_warps` " +
-				"(`name`,`world`,`x`,`y`,`z`,`yaw`,`pitch`) VALUES (" + 
+				"(`name`,`world`,`x`,`y`,`z`,`yaw`,`pitch`, `icon`) VALUES (" + 
 				"'" + warpName + "'," +
 				"'" + location.getWorld().getName() + "'," +
 				"'" + location.getX() + "'," +
@@ -487,8 +490,83 @@ public class CommandWarp extends CommandPlaceBase {
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 
 		List<String> matches = new ArrayList<String>();
-		return matches;
+        if (args.length == 0)
+            return matches;
 		
+		if (args.length == 1) {
+			// warp <name>
+			// warp list
+			// warp help 
+			final String warpLookup = args[args.length - 1].toLowerCase();
+			if (("list").startsWith(warpLookup) || ("list").equalsIgnoreCase(warpLookup)) {
+				matches.add("list");
+			}
+			
+			if (("help").startsWith(warpLookup) || ("help").equalsIgnoreCase(warpLookup)) {
+				matches.add("help");
+			}
+			
+			// warp names
+			for (Entry<String, Location> warp : m_warp.entrySet()) {
+				if (Module.hasPermission((Player)sender, WarpPermission.Warp.permission + "." + warp.getKey())) {
+					if (warp.getKey().toLowerCase().startsWith(warpLookup)) {
+						matches.add(warp.getKey());
+						continue;
+					}
+					
+					if (warp.getKey().toLowerCase().equalsIgnoreCase(warpLookup)) {
+						matches.add(warp.getKey());
+						continue;
+					}
+				}
+			}
+		}
+		else if (args.length == 2) {
+			// warp <name> <playername>
+			// warp <name> all
+			// warp <name> create
+			// warp <name> remove 
+			final String playerLookup = args[args.length - 1];
+			if (("all").startsWith(playerLookup) || ("all").equalsIgnoreCase(playerLookup)) {
+				matches.add("all");
+			}
+			
+			if (("create").startsWith(playerLookup) || ("create").equalsIgnoreCase(playerLookup)) {
+				matches.add("create");
+			}
+			
+			if (("remove").startsWith(playerLookup) || ("remove").equalsIgnoreCase(playerLookup)) {
+				matches.add("remove");
+			}
+			
+			if (("seticon").startsWith(playerLookup) || ("seticon").equalsIgnoreCase(playerLookup)) {
+				matches.add("seticon");
+			}
+			
+			// player names
+			List<OfflinePlayer> players = m_module.matchPlayer(playerLookup, false);
+			for (OfflinePlayer other : players) {
+				matches.add(other.getName());
+			}
+		}
+		else if (args.length == 3) {
+			// warp <name> seticon <material>
+			final String materialname = args[args.length - 1];
+			
+			for (Material material : Material.values()) {
+				if (material.toString().startsWith(materialname)) {
+					matches.add(material.toString());
+					continue;
+				}
+
+				if (material.toString().equalsIgnoreCase(materialname)) {
+					matches.add(material.toString());
+					continue;
+				}
+			}
+		}
+		
+		return matches;
 	}
 
 	@Override
