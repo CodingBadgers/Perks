@@ -8,10 +8,13 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import uk.thecodingbadgers.bkits.InventoryAliases;
 import uk.thecodingbadgers.bkits.bKits;
 import uk.thecodingbadgers.bkits.kit.Kit;
 
@@ -21,42 +24,52 @@ public class JsonKitParser extends KitParser {
 		super(config);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public List<Kit> parseKits() throws KitParseException {
-		JSONObject json = null;
+		JsonObject json = null;
 		
 		try {
-			JSONParser parser = new JSONParser();
-			json = (JSONObject) parser.parse(new FileReader(config));
+			JsonParser parser = new JsonParser();
+			json = parser.parse(new FileReader(config)).getAsJsonObject();
 		} catch (Exception e) {
 			throw new KitParseException("Error parsing file " + config.getName(), e);
 		}
 		
 		try {
-			JSONArray jsonKits = (JSONArray) json.get("kits");
+			JsonArray jsonKits = json.get("kits").getAsJsonArray();
 			List<Kit> kits = new ArrayList<Kit>();
 			
-			for (Object object : jsonKits) {
-				JSONObject kit = (JSONObject) object;
+			for (JsonElement element : jsonKits) {
+				if (!element.isJsonObject()) {
+					throw new KitParseException("Kit element is not a json object");
+				}
+				
+				JsonObject kit = element.getAsJsonObject();
 				
 				List<ItemStack> items = new ArrayList<ItemStack>();
-				JSONArray jsonItems = (JSONArray) kit.get("items");		
-				for (Object itemObject : jsonItems) {
-					JSONObject item = (JSONObject) itemObject;
+				JsonArray jsonItems = kit.get("items").getAsJsonArray();	
+				
+				for (JsonElement itemElement : jsonItems) {
+					if (!itemElement.isJsonObject()) {
+						throw new KitParseException("Item in kit is not a json object");
+					}
+					
+					JsonObject item = itemElement.getAsJsonObject();
 					
 					Material material;
-					if (item.containsKey("name")) {
-						material = Material.getMaterial((String) item.get("name"));
+					if (item.has("name")) {
+						material = InventoryAliases.getFromAlias(item.get("name").getAsString());
 						
 						if (material == null) {
-							bKits.getInstance().getLogger().warning((String) item.get("name") + " is not a valid item name");
+							bKits.getInstance().getLogger().warning(item.get("name").getAsString() + " is not a valid item name");
 							continue;
 						}
-					} else if (item.containsKey("id")){
-						material = Material.getMaterial(((Number) item.get("id")).intValue());
+					} else if (item.has("id")){
+						material = Material.getMaterial(item.get("id").getAsInt());
 
 						if (material == null) {
-							bKits.getInstance().getLogger().warning(((Number) item.get("id")).intValue() + " is not a valid item id");
+							bKits.getInstance().getLogger().warning(item.get("id").getAsInt() + " is not a valid item id");
 							continue;
 						}
 					} else {
@@ -64,13 +77,13 @@ public class JsonKitParser extends KitParser {
 					}
 					
 					short dv = 0;			
-					if (item.containsKey("dv")) {
-						dv = ((Number) item.get("dv")).shortValue();
+					if (item.has("data")) {
+						dv = item.get("data").getAsShort();
 					}
 					
 					int amount = 1;			
-					if (item.containsKey("amount")) {
-						amount = ((Number) item.get("amount")).intValue();
+					if (item.has("amount")) {
+						amount = item.get("amount").getAsInt();
 					}
 					
 					// clamp to max stack size
@@ -81,20 +94,24 @@ public class JsonKitParser extends KitParser {
 					
 					ItemStack stack = new ItemStack(material, amount, dv);
 					
-					if (item.containsKey("enchantments")) {
-						for (Object enchObject : (JSONArray) item.get("enchantments")) {
-							JSONObject ench = (JSONObject) enchObject;
-							Enchantment enchant = Enchantment.getById(((Number) ench.get("id")).intValue());
+					if (item.has("enchantments")) {
+						for (JsonElement enchElement : item.get("enchantments").getAsJsonArray()) {
+							if (!enchElement.isJsonObject()) {
+								throw new KitParseException("Enchantment for item is not a json object.");
+							}
+							
+							JsonObject ench = enchElement.getAsJsonObject();
+							Enchantment enchant = Enchantment.getById(ench.get("id").getAsInt());
 
 							if (enchant == null) {
-								bKits.getInstance().getLogger().warning(((Number) ench.get("id")).intValue() + " is not a valid enchantment id");
+								bKits.getInstance().getLogger().warning(ench.get("id").getAsInt() + " is not a valid enchantment id");
 								continue;
 							}
 							
 							int level = 1;
 							
-							if (ench.containsKey("level")) {
-								level = ((Number) ench.get("level")).intValue();
+							if (ench.has("level")) {
+								level = ench.get("level").getAsInt();
 							}
 							
 							// force adding the enchantment
@@ -103,7 +120,7 @@ public class JsonKitParser extends KitParser {
 					}
 					items.add(stack);
 				}
-				kits.add(new Kit((String) kit.get("name"), ((Number) kit.get("timeout")).longValue(), items));
+				kits.add(new Kit(kit.get("name").getAsString(), kit.get("timeout").getAsLong(), items));
 			}
 			
 			return kits;		

@@ -33,6 +33,7 @@ public class CfgKitParser extends KitParser {
 	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
+	@SuppressWarnings("deprecation")
 	public List<Kit> parseKits() throws KitParseException {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(config));
