@@ -39,3 +39,9 @@ You have opened your enderchest
 
 #craft-open-other
 You have opened %target%'s enderchest
+
+#anvil-open
+You have opened a anvil interface.
+
+#enchant-open
+You have opened a enchanting table interface.

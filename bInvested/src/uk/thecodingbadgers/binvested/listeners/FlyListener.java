@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.projectiles.ProjectileSource;
 
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 import uk.thecodingbadgers.binvested.bInvested;
@@ -69,6 +70,7 @@ public class FlyListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerAttack(EntityDamageEvent entityDamageEvent) {
 		
@@ -84,12 +86,13 @@ public class FlyListener implements Listener {
 			attacker = (Player) event.getDamager();
 		} else if (event.getDamager() instanceof Projectile) {
 			Projectile projectile = (Projectile) event.getDamager();
+			ProjectileSource source = projectile.getShooter();
 			
-			if (!(projectile.getShooter() instanceof Player)) {
+			if (!(source instanceof Player)) {
 				return;
 			}
 			
-			attacker = (Player) projectile.getShooter();
+			attacker = (Player) source;
 		}
 
 		if (attacker.getAllowFlight()) {

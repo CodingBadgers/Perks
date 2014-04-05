@@ -37,7 +37,7 @@ public class ScubaListener implements Listener {
 		}
 		
 		event.setCancelled(true);
-		event.setDamage(0);
+		event.setDamage(0d);
 		player.setRemainingAir(20);
 	}
 }

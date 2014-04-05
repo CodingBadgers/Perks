@@ -17,6 +17,7 @@ public class CommandEnder extends ModuleCommand {
 		setPermission("perks.binvested.ender");
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 

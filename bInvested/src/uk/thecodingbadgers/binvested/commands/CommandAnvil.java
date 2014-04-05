@@ -1,19 +1,19 @@
 package uk.thecodingbadgers.binvested.commands;
 
-import net.minecraft.server.v1_7_R1.Container;
-import net.minecraft.server.v1_7_R1.ContainerAnvil;
-import net.minecraft.server.v1_7_R1.ContainerAnvilInventory;
-import net.minecraft.server.v1_7_R1.EntityPlayer;
-import net.minecraft.server.v1_7_R1.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_7_R2.Container;
+import net.minecraft.server.v1_7_R2.ContainerAnvil;
+import net.minecraft.server.v1_7_R2.ContainerAnvilInventory;
+import net.minecraft.server.v1_7_R2.EntityPlayer;
+import net.minecraft.server.v1_7_R2.PacketPlayOutOpenWindow;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_7_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftInventoryAnvil;
-import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R2.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_7_R2.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftInventoryAnvil;
+import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
