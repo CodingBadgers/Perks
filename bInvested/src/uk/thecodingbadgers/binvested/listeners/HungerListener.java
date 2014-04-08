@@ -37,7 +37,7 @@ public class HungerListener implements Listener {
 		
 		List<MetadataValue> meta = player.getMetadata("bInvested-hungerCounter");
 		
-		if (meta.size() <= 1) {
+		if (meta.size() < 1) {
 			player.setMetadata("bInvested-hungerCounter", new FixedMetadataValue(bFundamentals.getInstance(), 0.0f));
 			event.setCancelled(true);
 			return;

@@ -17,6 +17,7 @@ public class CommandFly extends ModuleCommand {
 		setPermission("perks.binvested.fly");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 

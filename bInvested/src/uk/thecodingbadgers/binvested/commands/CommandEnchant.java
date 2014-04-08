@@ -1,14 +1,14 @@
 package uk.thecodingbadgers.binvested.commands;
 
-import net.minecraft.server.v1_7_R1.ContainerEnchantTable;
-import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R2.ContainerEnchantTable;
+import net.minecraft.server.v1_7_R2.EntityPlayer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R2.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
