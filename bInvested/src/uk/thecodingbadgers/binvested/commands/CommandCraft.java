@@ -3,7 +3,6 @@ package uk.thecodingbadgers.binvested.commands;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.thecodingbadgers.binvested.bInvested;
@@ -11,9 +10,9 @@ import uk.thecodingbadgers.binvested.bInvested;
 public class CommandCraft extends ModuleCommand {
 
 	public CommandCraft() {
-		super("craft", "/craft");
+		super("workbench", "/workbench");
 
-		setPermission("perks.binvested.craft");
+		setPermission("perks.binvested.workbench");
 	}
 	
 	@Override
