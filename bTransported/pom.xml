@@ -10,7 +10,7 @@
     </parent>
 	
 	<properties>
-		<bukkit.version>1.7.5-R0.1-SNAPSHOT</bukkit.version>
+		<bukkit.version>1.7.8-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
     <artifactId>bTransported</artifactId>
