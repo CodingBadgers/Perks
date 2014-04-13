@@ -12,8 +12,8 @@ package uk.codingbadgers.btransported.permissions;
  */
 public enum WarpPermission {
 	
-	Warp ("perks.btransported.warp"),
-	WarpOther ("perks.btransported.warp.other"),
+	Warp ("perks.btransported.warp.to"),
+	WarpOther ("perks.btransported.warp.to.other"),
 	Remove ("perks.btransported.warp.remove"),
 	Create ("perks.btransported.warp.create"),
 	List ("perks.btransported.warp.list"),
