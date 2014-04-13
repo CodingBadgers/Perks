@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -97,7 +99,7 @@ public class bKits extends Module {
 				JSONObject jsonKit = (JSONObject) kitRaw;
 				Kit newKit = new Kit();
 				newKit.loadKit(jsonKit);
-				m_kits.put(newKit.getName(), newKit);
+				m_kits.put(newKit.getName().toLowerCase(), newKit);
 			}
 			
 		} catch (IOException ex) {
@@ -284,6 +286,41 @@ public class bKits extends Module {
 				"');";
 		
 		db.query(query, true);
+		
+	}
+
+	/**
+	 * 
+	 * @param player
+	 * @param kit 
+	 */
+	public void giveKit(Player player, Kit kit) {
+		
+		// Check if has enough room
+		final PlayerInventory invent = player.getInventory();
+		int freeSpace = 0;
+		for (ItemStack item : invent.getContents()) {
+			if (item == null) {
+				freeSpace++;
+			}
+		}
+
+		Map<Integer, ItemStack> kitItems = kit.getItems();
+		if (kitItems.size() > freeSpace) {
+			Module.sendMessage("Kits", player, "You do not have enough space in your inventory! " + kitItems.size() + " free slots are required.");
+			return;
+		}
+
+		// Give items
+		for (ItemStack item : kitItems.values()) {
+			invent.addItem(item.clone());
+		}
+		player.updateInventory();
+
+		// Add to database
+		this.logKitClaim(player, kit.getName(), System.currentTimeMillis());
+		
+		Module.sendMessage("Kits", player, "You have been given the kit '" + kit.getName() + "'");
 		
 	}
 	

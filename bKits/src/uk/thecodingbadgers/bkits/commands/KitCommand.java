@@ -41,7 +41,7 @@ public class KitCommand extends ModuleCommand {
 	public boolean onCommand(CommandSender sender, String labe, String[] args) {
 
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(m_module.getLanguageValue("not-player"));
+			Module.sendMessage("Kits", sender, m_module.getLanguageValue("not-player"));
 			return true;
 		}
 
@@ -52,9 +52,22 @@ public class KitCommand extends ModuleCommand {
 			return true;
 		}
 
-		String kitname = args[0];
-		// give kit no gui TODO
+		String kitname = args[0].toLowerCase();
+		if (!m_module.getKits().containsKey(kitname)) {
+			Module.sendMessage("Kits", player, m_module.getLanguageValue("unknown-kit-name"));
+			return true;
+		}
 		
+		Kit kit = m_module.getKits().get(kitname);
+		KitClaim claim = m_module.canPlayerClaimKit(player, kit);
+		
+		if (!claim.canClaim) {
+			Module.sendMessage("Kits", player, claim.timeLeft);
+			return true;
+		}
+		
+		m_module.giveKit(player, kit);
+				
 		return true;
 	}
 	

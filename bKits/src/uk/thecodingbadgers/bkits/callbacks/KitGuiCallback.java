@@ -11,12 +11,10 @@ import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.gui.GuiCallback;
 import uk.codingbadgers.bFundamentals.gui.GuiInventory;
-import uk.codingbadgers.bFundamentals.module.Module;
 import uk.thecodingbadgers.bkits.Kit;
 import uk.thecodingbadgers.bkits.bKits;
 
@@ -55,30 +53,8 @@ public class KitGuiCallback implements GuiCallback {
 		
 		if (clickEvent.isLeftClick() && m_canClaim) {
 			
-			// Check if has enough room
-			final PlayerInventory invent = m_player.getInventory();
-			int freeSpace = 0;
-			for (ItemStack item : invent.getContents()) {
-				if (item == null) {
-					freeSpace++;
-				}
-			}
-
-			Map<Integer, ItemStack> kitItems = m_kit.getItems();
-			if (kitItems.size() > freeSpace) {
-				Module.sendMessage("Kits", m_player, "You do not have enough space in your inventory! " + kitItems.size() + " free slots are required.");
-				return;
-			}
-
-			// Give items
-			for (ItemStack item : kitItems.values()) {
-				invent.addItem(item.clone());
-			}
-			m_player.updateInventory();
-			
-			// Add to database
-			m_module.logKitClaim(m_player, m_kit.getName(), System.currentTimeMillis());
-			
+			m_module.giveKit(m_player, m_kit);
+						
 			inventory.close(m_player);
 			m_player.closeInventory();
 		}
@@ -105,7 +81,7 @@ public class KitGuiCallback implements GuiCallback {
 					details = (String[]) meta.getLore().toArray();
 				}
 				
-				previewInvent.addMenuItem(name, previewItem, details, slot, previewItem.getAmount(), new KitPreviewGuiCallback(inventory, m_player));
+				previewInvent.addMenuItem(formatName(name), previewItem, details, slot, previewItem.getAmount(), new KitPreviewGuiCallback(inventory, m_player));
 				
 			}
 			
@@ -114,6 +90,23 @@ public class KitGuiCallback implements GuiCallback {
 			previewInvent.open(m_player);
 			
 		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param raw
+	 * @return 
+	 */
+	private String formatName(String raw) {
+		
+		String lower = raw.toLowerCase();
+		String[] parts = lower.split("_");
+		String formatted = "";
+		for (String part : parts) {
+			formatted += part.substring(0, 1).toUpperCase() + part.substring(1) + " ";
+		}
+		return formatted;
 		
 	}
 	
