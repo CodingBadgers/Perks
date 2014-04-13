@@ -49,8 +49,10 @@ public class KitSaveCommand extends ModuleCommand {
 			return true;
 		}
 		
-		if (!Module.hasPermission(sender, PERMISSION_KIT_SAVE)) {
-			Module.sendMessage("Kits", sender, m_module.getLanguageValue("COMMAND-BKITS-SAVE-NO-PERMISSION"));
+		final Player player = (Player)sender;
+		
+		if (!Module.hasPermission(player, PERMISSION_KIT_SAVE)) {
+			Module.sendMessage("Kits", player, m_module.getLanguageValue("COMMAND-BKITS-SAVE-NO-PERMISSION"));
 			return true;
 		}
 		
@@ -59,7 +61,6 @@ public class KitSaveCommand extends ModuleCommand {
 			return true;
 		}
 		
-		final Player player = (Player)sender;
 		final PlayerInventory invent = player.getInventory();
 		final String kitName = args[0];
 		final Double kitTimeout = Double.parseDouble(args[1]);
