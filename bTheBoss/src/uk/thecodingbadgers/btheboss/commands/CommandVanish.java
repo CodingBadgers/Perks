@@ -15,7 +15,7 @@ public class CommandVanish extends ModuleCommand {
 
 	public CommandVanish() {
 		super("vanish", "/vanish");
-		setHelp("Vanish into nothingness");
+		setDescription("Vanish into nothingness");
 		setPermission("perks.btheboss.vanish");
 	}
 	

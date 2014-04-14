@@ -15,7 +15,7 @@ public class CommandClear extends ModuleCommand {
 
 	public CommandClear() {
 		super("clear", "/clear [target]");
-		setHelp("Clear your inventory");
+		setDescription("Clear your inventory");
 		setPermission("perks.btheboss.clear");
 	}
 	
