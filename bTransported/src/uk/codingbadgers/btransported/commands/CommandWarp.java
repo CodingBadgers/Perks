@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -337,9 +338,15 @@ public class CommandWarp extends CommandPlaceBase {
 				item = new ItemStack(m_warpIcon.get(warp.getKey()));
 			}
 			
+			final Location location = warp.getValue();
+			if (location.getWorld() == null) {
+				m_module.log(Level.WARNING, "The warp '" + warp.getKey() + "' has a null world as its location!");
+				continue;
+			}
+			
 			String[] details = new String[2];
-			details[0] = warp.getValue().getBlockX() + ", " + warp.getValue().getBlockY() + ", " + warp.getValue().getBlockZ();
-			details[1] = warp.getValue().getWorld().getName();
+			details[0] = location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
+			details[1] = location.getWorld().getName();
 			inventory.addMenuItem(warp.getKey(), item, details, new WarpGuiCallback(player, warp.getKey(), this));
 		}
 		
