@@ -307,7 +307,8 @@ public class bKits extends Module {
 
 		Map<Integer, ItemStack> kitItems = kit.getItems();
 		if (kitItems.size() > freeSpace) {
-			Module.sendMessage("Kits", player, "You do not have enough space in your inventory! " + kitItems.size() + " free slots are required.");
+			Module.sendMessage("Kits", player, "You do not have enough space in your inventory! " + 
+				(kitItems.size() == 1 ? "1 free slot is required" : (kitItems.size() + " free slots are required.")));
 			return;
 		}
 
