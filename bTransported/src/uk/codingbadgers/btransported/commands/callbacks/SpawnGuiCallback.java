@@ -45,7 +45,7 @@ public class SpawnGuiCallback implements GuiCallback {
         
 		// Teleport the player
 		if (m_module.teleportOfflinePlayer(m_player, m_spawn.getValue())) {
-			Module.sendMessage("Spawn", m_player, m_module.getLanguageValue("COMMAND-SPAWN-TELEPORT-SUCCESS"));
+			m_module.getLanguageValue("COMMAND-SPAWN-COMPLETE").replace("%worldname%", m_spawn.getKey());
 		}
 		else {
 			Module.sendMessage("Spawn", m_player, m_module.getLanguageValue("COMMAND-SPAWN-TELEPORT-FAIL"));
