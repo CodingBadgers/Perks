@@ -64,27 +64,37 @@ public class bTransported extends Module {
 		createConfigurationFiles();
 		
 		// Resiter the commands
-		registerCommand(new CommandTP(this));
-		registerCommand(new CommandTPHere(this));
+		if (m_teleportationConfiguration.getBoolean("commands.tp")) {
+			registerCommand(new CommandTP(this));
+			registerCommand(new CommandTPHere(this));
+
+			registerCommand(new CommandTPR(this));
+			registerCommand(new CommandTPHR(this));
+			registerCommand(new CommandTPA(this));
+		}
 		
-		registerCommand(new CommandTPR(this));
-		registerCommand(new CommandTPHR(this));
-		registerCommand(new CommandTPA(this));
+		if (m_teleportationConfiguration.getBoolean("commands.warp")) {
+			CommandWarp warpCommand = new CommandWarp(this);
+			registerCommand(warpCommand);
+			register(warpCommand);
+		}
 		
-		CommandWarp warpCommand = new CommandWarp(this);
-		registerCommand(warpCommand);
-		
-		CommandSpawn spawnCommand = new CommandSpawn(this);
-		registerCommand(spawnCommand);
+		if (m_teleportationConfiguration.getBoolean("commands.spawn")) {
+			CommandSpawn spawnCommand = new CommandSpawn(this);
+			registerCommand(spawnCommand);
+			register(spawnCommand);
+		}
                 
-		CommandHome homeCommand = new CommandHome(this);
-		registerCommand(homeCommand);
+		if (m_teleportationConfiguration.getBoolean("commands.home")) {
+			CommandHome homeCommand = new CommandHome(this);
+			registerCommand(homeCommand);
+			register(homeCommand);
+		}
 		
 		// Register the player teleport listener
-		register(new PlayerTeleportListener(this));
-		register(warpCommand);
-		register(spawnCommand);
-		register(homeCommand);
+		if (m_teleportationConfiguration.getBoolean("listener.main")) {
+			register(new PlayerTeleportListener(this));
+		}
 		
 		log(Level.INFO,  getName() + " version " + getVersion() + " enabled.");
 	}
@@ -119,6 +129,11 @@ public class bTransported extends Module {
 			
 			// Create a Yaml configuration for the given config file
 			m_teleportationConfiguration = YamlConfiguration.loadConfiguration(configFile);
+			
+			m_teleportationConfiguration.addDefault("commands.tp", true);
+			m_teleportationConfiguration.addDefault("commands.home", true);
+			m_teleportationConfiguration.addDefault("commands.spawn", true);
+			m_teleportationConfiguration.addDefault("commands.warp", true);
 			
 			m_teleportationConfiguration.addDefault("teleport-protection-enabled", true);
 			
