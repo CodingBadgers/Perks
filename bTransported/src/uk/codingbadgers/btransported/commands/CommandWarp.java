@@ -31,6 +31,16 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
  * @author Sam
  */
 public class CommandWarp extends CommandPlaceBase {
+	
+	private class WarpLocation {
+		public WarpLocation(Location location, String worldName) {
+			this.location = location;
+			this.worldName = worldName;
+		}
+		
+		public Location location;
+		public String worldName;
+	}
 
 	/**
 	 * The main module
@@ -40,7 +50,7 @@ public class CommandWarp extends CommandPlaceBase {
 	/**
 	 * Hashmap of warp locations
 	 */
-	private HashMap<String, Location> m_warp = new HashMap<String, Location>();
+	private HashMap<String, WarpLocation> m_warp = new HashMap<String, WarpLocation>();
 	
 	/**
 	 * Hash map of warp name and icon
@@ -186,6 +196,30 @@ public class CommandWarp extends CommandPlaceBase {
 	
 	/**
 	 * 
+	 * @param warpname
+	 * @return 
+	 */
+	public WarpLocation getWarpLocation(String warpname) {
+		
+		if (!m_warp.containsKey(warpname)) {
+			return null;
+		}
+		
+		WarpLocation warpLocation = m_warp.get(warpname);
+		if (warpLocation.location.getWorld() == null) {
+			World world = Bukkit.getWorld(warpLocation.worldName);
+			if (world == null) {
+				return null;
+			}
+			warpLocation.location.setWorld(world);
+			m_warp.put(warpname, warpLocation);
+		}
+		
+		return warpLocation;
+	}
+	
+	/**
+	 * 
 	 * @param player
 	 * @param warpname
 	 * @param playername 
@@ -203,7 +237,13 @@ public class CommandWarp extends CommandPlaceBase {
 			return;
 		}
 
-		final Location location = m_warp.get(warpname);
+		final WarpLocation warpLocation = getWarpLocation(warpname);
+		if (warpLocation == null) {
+			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NOT-FOUND"));
+			return;
+		}
+		
+		final Location location = warpLocation.location;
 		m_module.teleportOfflinePlayer(warpPlayer, location);
 		
 		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-COMPLETE").replace("%warpname%", warpname));
@@ -280,7 +320,7 @@ public class CommandWarp extends CommandPlaceBase {
 		}
 
 		final Location location = player.getLocation();
-		m_warp.put(warpname, location);
+		m_warp.put(warpname, new WarpLocation(location, location.getWorld().getName()));
 		addWarpToDatabase(warpname, location, Material.EYE_OF_ENDER);
 		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-CREATED").replace("%warpname%", warpname));
 	}
@@ -297,11 +337,17 @@ public class CommandWarp extends CommandPlaceBase {
 		}
 
 		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-LIST"));
-		for (Entry<String, Location> entry : m_warp.entrySet()) {
+		for (Entry<String, WarpLocation> entry : m_warp.entrySet()) {
 			final String name = entry.getKey();
-			final Location location = entry.getValue();				
+			
+			final WarpLocation warpLocation = getWarpLocation(name);
+			if (warpLocation == null) {
+				continue;
+			}
+			
+			final Location location = warpLocation.location;
 			if (Module.hasPermission(player, WarpPermission.Warp.permission + "." + name)) {
-				Module.sendMessage("bTransported", player, " - " + ChatColor.GOLD + name + ChatColor.WHITE + " at " + (int)location.getX() + ", " + (int)location.getY() + ", " + (int)location.getZ() + " in " + location.getWorld().getName());
+				Module.sendMessage("bTransported", player, " - " + ChatColor.GOLD + name + ChatColor.WHITE + " at " + (int)location.getX() + ", " + (int)location.getY() + ", " + (int)location.getZ() + " in " + warpLocation.worldName);
 			}
 		}
 		
@@ -328,7 +374,7 @@ public class CommandWarp extends CommandPlaceBase {
         inventory.createInventory("Warp Selection", ROW_COUNT);
 
         // Show the warps
-        for (Entry<String, Location> warp : m_warp.entrySet()) {
+        for (Entry<String, WarpLocation> warp : m_warp.entrySet()) {
 			if (!Module.hasPermission(player, WarpPermission.Warp.permission + "." + warp.getKey())) {
 				continue;
 			}
@@ -338,15 +384,16 @@ public class CommandWarp extends CommandPlaceBase {
 				item = new ItemStack(m_warpIcon.get(warp.getKey()));
 			}
 			
-			final Location location = warp.getValue();
-			if (location.getWorld() == null) {
-				m_module.log(Level.WARNING, "The warp '" + warp.getKey() + "' has a null world as its location!");
+			final WarpLocation warplocation = getWarpLocation(warp.getKey());
+			if (warplocation == null) {
 				continue;
 			}
 			
+			final Location location = warplocation.location;
+			
 			String[] details = new String[2];
 			details[0] = location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
-			details[1] = location.getWorld().getName();
+			details[1] = warplocation.worldName;
 			inventory.addMenuItem(warp.getKey(), item, details, new WarpGuiCallback(player, warp.getKey(), this));
 		}
 		
@@ -385,10 +432,15 @@ public class CommandWarp extends CommandPlaceBase {
 		
 		if (!m_warp.containsKey(warpName)) {
 			Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-NOT-FOUND").replace("%warpname%", warpName));					
-			return false;
+			return true;
 		}
 		
-		final Location location = m_warp.get(warpName);
+		final WarpLocation warplocation = getWarpLocation(warpName);
+		if (warplocation == null) {
+			return true;
+		}
+		
+		final Location location = warplocation.location;
 		player.teleport(location);				
 		
 		Module.sendMessage("bTransported", player, m_module.getLanguageValue("COMMAND-WARP-COMPLETE").replace("%warpname%", warpName));
@@ -475,9 +527,14 @@ public class CommandWarp extends CommandPlaceBase {
 					Material icon = Material.valueOf(result.getString("icon"));
 		            
 		            World world = Bukkit.getServer().getWorld(worldName);
+					if (world == null) {
+						m_module.log(Level.WARNING, "The world name '" + worldName + "' does not exist for warp '" + warpName + "'.");
+						continue;
+					}
+					
 		            Location location = new Location(world, x, y, z, yaw, pitch);
 		                        
-		            m_warp.put(warpName, location);		
+		            m_warp.put(warpName, new WarpLocation(location, worldName));		
 					m_warpIcon.put(warpName, icon);
 		        }
 			} catch (SQLException e) {
@@ -514,7 +571,7 @@ public class CommandWarp extends CommandPlaceBase {
 			}
 			
 			// warp names
-			for (Entry<String, Location> warp : m_warp.entrySet()) {
+			for (Entry<String, WarpLocation> warp : m_warp.entrySet()) {
 				if (Module.hasPermission((Player)sender, WarpPermission.Warp.permission + "." + warp.getKey())) {
 					if (warp.getKey().toLowerCase().startsWith(warpLookup)) {
 						matches.add(warp.getKey());
