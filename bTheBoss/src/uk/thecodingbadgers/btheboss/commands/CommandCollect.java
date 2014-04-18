@@ -15,7 +15,7 @@ public class CommandCollect extends ModuleCommand {
 
 	public CommandCollect() {
 		super("collect", "/collect");
-		setHelp("Collect your cleared inventory");
+		setDescription("Collect your cleared inventory");
 		setPermission("perks.btheboss.clear");
 	}
 	

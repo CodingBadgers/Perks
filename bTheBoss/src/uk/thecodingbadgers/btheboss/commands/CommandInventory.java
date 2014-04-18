@@ -20,7 +20,7 @@ public class CommandInventory extends ModuleCommand {
 		addAliase("item");
 		addAliase("i");
 		
-		setHelp("Give yourself or another person an item");
+		setDescription("Give yourself or another person an item");
 		setPermission("perks.btheboss.inventory");
 	}
 	
@@ -76,7 +76,6 @@ public class CommandInventory extends ModuleCommand {
 			int id = Integer.parseInt(matName);
 			material = Material.getMaterial(id);
 		} else {
-			
 			material = InventoryAliases.getFromAlias(matName);
 			
 			if (material == null) {

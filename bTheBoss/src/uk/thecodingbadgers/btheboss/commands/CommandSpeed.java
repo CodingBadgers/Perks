@@ -13,7 +13,7 @@ public class CommandSpeed extends ModuleCommand {
 
 	public CommandSpeed() {
 		super("speed", "/speed <fly_speed> [target]");
-		setHelp("Set your flying speed");
+		setDescription("Set your flying speed");
 		setPermission("perks.btheboss.speed.use");
 	}
 
