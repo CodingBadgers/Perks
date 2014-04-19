@@ -10,8 +10,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -33,7 +34,7 @@ import uk.thecodingbadgers.bkits.commands.KitSaveCommand;
  */
 public class bKits extends Module {
 
-	private Map<String, Kit> m_kits = new HashMap<String, Kit>();
+	private TreeMap<String, Kit> m_kits = new TreeMap<String, Kit>();
 	
 	/**
 	 * Gets the database associated with this module.
@@ -65,8 +66,8 @@ public class bKits extends Module {
 	 * 
 	 * @return 
 	 */
-	public Map<String, Kit> getKits() {
-		return m_kits;
+	public Map<String, Kit> getKits() {		
+		return Collections.synchronizedSortedMap(m_kits);
 	}
 	
 	/**
