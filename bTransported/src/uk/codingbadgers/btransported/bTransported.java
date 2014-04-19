@@ -20,6 +20,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.btransported.commands.CommandRandomWarp;
 import uk.codingbadgers.btransported.commands.CommandSpawn;
 import uk.codingbadgers.btransported.commands.CommandWarp;
 import uk.codingbadgers.btransported.commands.home.CommandHome;
@@ -76,7 +77,8 @@ public class bTransported extends Module {
 		if (m_teleportationConfiguration.getBoolean("commands.warp")) {
 			CommandWarp warpCommand = new CommandWarp(this);
 			registerCommand(warpCommand);
-			register(warpCommand);
+			register(warpCommand);                        
+                        registerCommand(new CommandRandomWarp(warpCommand));
 		}
 		
 		if (m_teleportationConfiguration.getBoolean("commands.spawn")) {

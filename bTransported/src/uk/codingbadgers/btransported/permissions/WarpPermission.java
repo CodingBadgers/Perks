@@ -18,6 +18,7 @@ public enum WarpPermission {
 	Create ("perks.btransported.warp.create"),
 	List ("perks.btransported.warp.list"),
 	Gui ("perks.btransported.warp.gui"),
+        Random ("perks.btransported.warp.random"),
 	All ("perks.btransported.warp.all");
 
 	public final String permission;
