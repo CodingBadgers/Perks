@@ -30,7 +30,7 @@ public class ScubaListener implements Listener {
 		
 		ItemStack helmet = player.getEquipment().getHelmet();
 		
-		if (helmet.getType() == Material.GOLD_HELMET) {
+		if (helmet != null && helmet.getType() == Material.GOLD_HELMET) {
 			helmet.setDurability((short) (helmet.getDurability() - SCUBA_DAMAGE));
 		} else if (!bInvested.hasPermission(player, "perks.binvested.scuba.plus")) {
 			return;
