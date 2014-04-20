@@ -95,7 +95,7 @@ public class FlyListener implements Listener {
 			attacker = (Player) source;
 		}
 
-		if (attacker.getAllowFlight()) {
+		if (attacker != null && attacker.getAllowFlight()) {
 			outputMessage(attacker, bInvested.getInstance().getLanguageValue("fly-no-damage"));
 			event.setCancelled(true);
 		}
